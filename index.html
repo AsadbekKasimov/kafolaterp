@@ -277,11 +277,12 @@ async function selectClient(id){
   state.selectedClient=id;
   const r=await api("getClientProducts",{clientId:id});
   state.clientProducts=r.products||[];
-  document.getElementById("saleProduct").innerHTML=
-    state.clientProducts.map(p=>
-      `<option value="${p.product_id}" data-price="${p.price}">${p.product_name}</option>`
-    ).join("");
-  calcSum();
+ document.getElementById("saleProduct").innerHTML =
+  state.clientProducts.map(p =>
+    `<option value="${p.productId}" data-price="${p.price}">
+      ${p.productName}
+    </option>`
+  ).join("");
 }
 
 function calcSum(){
@@ -297,7 +298,7 @@ async function saveSale(){
   const p=document.querySelector("#saleProduct option:checked");
   await api("addSale",{
     clientId:state.selectedClient,
-    productId:p.value,
+    productId: Number(p.value),
     quantity:document.getElementById("qty").value
   });
   alert("Продажа сохранена");
