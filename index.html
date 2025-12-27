@@ -1,794 +1,315 @@
         <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP System</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Enhanced ERP WebApp</title>
 
-        :root {
-            --primary-red: #DC2626;
-            --red-hover: #B91C1C;
-            --red-light: #FEE2E2;
-            --red-dark: #991B1B;
-            --bg-white: #FFFFFF;
-            --bg-gray: #F9FAFB;
-            --text-dark: #111827;
-            --text-gray: #6B7280;
-            --border-gray: #E5E7EB;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-gray);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0;
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: var(--bg-white);
-            border-bottom: 1px solid var(--border-gray);
-            padding: 1rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary-red), var(--red-dark));
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .lang-switcher {
-            display: flex;
-            gap: 0.25rem;
-            background: var(--bg-gray);
-            padding: 0.25rem;
-            border-radius: 8px;
-        }
-
-        .lang-btn {
-            padding: 0.375rem 0.75rem;
-            border: none;
-            background: transparent;
-            color: var(--text-gray);
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-
-        .lang-btn.active {
-            background: var(--bg-white);
-            color: var(--primary-red);
-            box-shadow: var(--shadow);
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 0.5rem;
-            padding: 1.5rem 1.5rem 0;
-            background: var(--bg-white);
-            border-bottom: 1px solid var(--border-gray);
-            overflow-x: auto;
-        }
-
-        .nav-tab {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            background: transparent;
-            color: var(--text-gray);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            font-weight: 600;
-            transition: all 0.2s;
-            white-space: nowrap;
-            font-size: 0.9375rem;
-        }
-
-        .nav-tab.active {
-            color: var(--primary-red);
-            border-bottom-color: var(--primary-red);
-        }
-
-        .content {
-            flex: 1;
-            padding: 2rem 1.5rem;
-        }
-
-        .card {
-            background: var(--bg-white);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-gray);
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 0.875rem;
-        }
-
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border-gray);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Onest', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary-red);
-            box-shadow: 0 0 0 3px var(--red-light);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Onest', sans-serif;
-        }
-
-        .btn-primary {
-            background: var(--primary-red);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--red-hover);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--border-gray);
-            border-top-color: var(--primary-red);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error-message {
-            background: #FEE2E2;
-            color: #991B1B;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .success-message {
-            background: #D1FAE5;
-            color: #065F46;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--bg-white);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-gray);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            background: var(--red-light);
-            color: var(--primary-red);
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-gray);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .setup-instructions {
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 2rem;
-        }
-
-        .setup-instructions h2 {
-            color: var(--primary-red);
-            margin-bottom: 1rem;
-        }
-
-        .setup-instructions ol {
-            margin-left: 1.5rem;
-        }
-
-        .setup-instructions li {
-            margin-bottom: 1rem;
-            line-height: 1.8;
-        }
-
-        .setup-instructions code {
-            background: var(--bg-gray);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
-            .content {
-                padding: 1.5rem 1rem;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<style>
+:root{
+  --red:#dc2626;
+  --red-dark:#991b1b;
+  --bg:#f9fafb;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Onest,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  font-size:20px;
+  font-weight:800;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.logo span{
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  color:#fff;
+  padding:6px 10px;
+  border-radius:8px;
+}
+nav{
+  display:flex;
+  gap:10px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:10px;
+  overflow-x:auto;
+}
+nav button{
+  border:none;
+  background:none;
+  padding:10px 16px;
+  font-weight:600;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+}
+nav button.active{
+  border-color:var(--red);
+  color:var(--red);
+}
+main{padding:20px}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+}
+.card h2{margin-bottom:14px}
+label{font-size:13px;font-weight:600}
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  margin-bottom:14px;
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+button.primary{
+  background:var(--red);
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  border-bottom:1px solid var(--border);
+  padding:10px;
+  text-align:left;
+  font-size:14px;
+}
+th{background:#f3f4f6}
+.success{color:green;font-weight:600}
+.error{color:#b91c1c;font-weight:600}
+</style>
 </head>
+
 <body>
-    <div id="app" class="app-container"></div>
+<header>
+  <div class="logo"><span>ERP</span> Enhanced</div>
+  <div id="tgUser"></div>
+</header>
 
-    <script>
-        // ============================================
-        // ВАЖНО! ЗАМЕНИТЕ URL НИЖЕ НА ВАШ!
-        // ============================================
-        // Получите URL из Google Apps Script:
-        // 1. Откройте Apps Script
-        // 2. Нажмите "Развернуть" → "Управление развертываниями"
-        // 3. Скопируйте "URL веб-приложения"
-        // 4. Вставьте ниже
-        // ============================================
-        
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzY6j5lqgw5SIgfZtl0el4fnI1B2pRuBCrdA-Gp5PnSZVkC43pvlPv9XPEMF5-iwBQeLA/exec';
-        
-        // Проверка настройки URL
-        const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && 
-                            SCRIPT_URL.includes('script.google.com');
-        
-        // Translations
-        const translations = {
-            ru: {
-                appTitle: 'ERP Система',
-                dashboard: 'Панель',
-                sales: 'Продажи',
-                receipts: 'Поступления',
-                addSale: 'Добавить продажу',
-                addReceipt: 'Добавить поступление',
-                client: 'Клиент',
-                product: 'Товар',
-                quantity: 'Количество',
-                amount: 'Сумма',
-                date: 'Дата',
-                save: 'Сохранить',
-                totalSales: 'Общие продажи',
-                totalReceipts: 'Общие поступления',
-                productsCount: 'Товаров',
-                loading: 'Загрузка...',
-                success: 'Успешно сохранено!',
-                selectClient: 'Выберите клиента',
-                selectProduct: 'Выберите товар',
-                notConfigured: 'Приложение не настроено',
-                setupTitle: 'Инструкция по настройке',
-                checkingConfig: 'Проверка настроек...'
-            },
-            uz: {
-                appTitle: 'ERP Tizimi',
-                dashboard: 'Boshqaruv paneli',
-                sales: 'Sotuvlar',
-                receipts: 'Qabul qilishlar',
-                addSale: "Sotuv qo'shish",
-                addReceipt: "Qabul qo'shish",
-                client: 'Mijoz',
-                product: 'Mahsulot',
-                quantity: 'Miqdor',
-                amount: 'Summa',
-                date: 'Sana',
-                save: 'Saqlash',
-                totalSales: 'Jami sotuvlar',
-                totalReceipts: "Jami qabul qilishlar",
-                productsCount: 'Mahsulotlar',
-                loading: 'Yuklanmoqda...',
-                success: 'Muvaffaqiyatli saqlandi!',
-                selectClient: 'Mijozni tanlang',
-                selectProduct: 'Mahsulotni tanlang',
-                notConfigured: 'Ilova sozlanmagan',
-                setupTitle: 'Sozlash bo'yicha qo'llanma',
-                checkingConfig: 'Sozlamalar tekshirilmoqda...'
-            }
-        };
+<nav>
+  <button onclick="setTab('dashboard')" class="active">📊 Dashboard</button>
+  <button onclick="setTab('sales')">💰 Продажи</button>
+  <button onclick="setTab('receipts')">📥 Поступления</button>
+  <button onclick="setTab('clients')">👥 Клиенты</button>
+  <button onclick="setTab('products')">📦 Товары</button>
+  <button onclick="setTab('prices')">💵 Цены</button>
+</nav>
 
-        // State
-        let state = {
-            lang: 'ru',
-            activeTab: 'dashboard',
-            loading: true,
-            showSuccess: false,
-            error: null,
-            clients: [],
-            products: [],
-            salesData: [],
-            receiptsData: []
-        };
+<main id="app"></main>
 
-        // API Functions
-        async function apiCall(action, params = {}) {
-            if (!isConfigured) {
-                throw new Error('SCRIPT_URL не настроен');
-            }
+<script>
+// ================= НАСТРОЙКА =================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzY6j5lqgw5SIgfZtl0el4fnI1B2pRuBCrdA-Gp5PnSZVkC43pvlPv9XPEMF5-iwBQeLA/exec";
+// ============================================
 
-            const url = new URL(SCRIPT_URL);
-            url.searchParams.append('action', action);
-            
-            Object.keys(params).forEach(key => {
-                url.searchParams.append(key, params[key]);
-            });
+const tg = window.Telegram?.WebApp;
+const tgUser = tg?.initDataUnsafe?.user;
+if(tg){ tg.ready(); tg.expand(); }
+document.getElementById("tgUser").innerText =
+  tgUser ? `👤 ${tgUser.first_name}` : "Web";
 
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        }
+// ========= STATE =========
+let state={
+  tab:"dashboard",
+  clients:[],
+  products:[],
+  clientProducts:[],
+  selectedClient:null
+};
 
-        async function loadData() {
-            try {
-                const [clients, products, reportData] = await Promise.all([
-                    apiCall('getClients'),
-                    apiCall('getProducts'),
-                    apiCall('getReportData', {
-                        clientName: '',
-                        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        endDate: new Date().toISOString().split('T')[0]
-                    })
-                ]);
+// ========= API =========
+async function api(action, params={}){
+  const url=new URL(SCRIPT_URL);
+  url.searchParams.set("action",action);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const r=await fetch(url);
+  return r.json();
+}
 
-                if (clients.success) state.clients = clients.clients || [];
-                if (products.success) state.products = products.products || [];
-                if (reportData.success) {
-                    state.salesData = reportData.data.sales || [];
-                    state.receiptsData = reportData.data.receipts || [];
-                }
-            } catch (error) {
-                console.error('Error loading data:', error);
-                state.error = error.message;
-            }
-        }
+// ========= INIT =========
+async function init(){
+  state.clients=(await api("getClients")).clients||[];
+  state.products=(await api("getProducts")).products||[];
+  render();
+}
+init();
 
-        async function addSale(clientName, productName, quantity, amount, date) {
-            try {
-                const result = await apiCall('addSale', {
-                    clientName, productName, quantity, amount, date
-                });
-                
-                if (result.success) {
-                    state.showSuccess = true;
-                    setTimeout(() => {
-                        state.showSuccess = false;
-                        render();
-                    }, 3000);
-                    await loadData();
-                }
-                
-                return result.success;
-            } catch (error) {
-                state.error = error.message;
-                return false;
-            }
-        }
+// ========= UI =========
+function setTab(t){
+  state.tab=t;
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+  render();
+}
 
-        async function addReceipt(clientName, productName, quantity, amount, date) {
-            try {
-                const result = await apiCall('addReceipt', {
-                    clientName, productName, quantity, amount, date
-                });
-                
-                if (result.success) {
-                    state.showSuccess = true;
-                    setTimeout(() => {
-                        state.showSuccess = false;
-                        render();
-                    }, 3000);
-                    await loadData();
-                }
-                
-                return result.success;
-            } catch (error) {
-                state.error = error.message;
-                return false;
-            }
-        }
+function render(){
+  const app=document.getElementById("app");
+  if(state.tab==="dashboard"){
+    app.innerHTML=`
+      <div class="card">
+        <h2>📊 Dashboard</h2>
+        <p>Клиентов: <b>${state.clients.length}</b></p>
+        <p>Товаров: <b>${state.products.length}</b></p>
+      </div>`;
+  }
 
-        // Render Functions
-        function renderSetupInstructions() {
-            const t = translations[state.lang];
-            return `
-                <div class="setup-instructions">
-                    <div class="card">
-                        <h2>${t.setupTitle}</h2>
-                        <p style="color: var(--primary-red); font-weight: 600; margin-bottom: 1rem;">
-                            ⚠️ ${t.notConfigured}
-                        </p>
-                        <ol>
-                            <li>Откройте Google Apps Script редактор</li>
-                            <li>Нажмите <strong>Развернуть</strong> → <strong>Управление развертываниями</strong></li>
-                            <li>Скопируйте <strong>URL веб-приложения</strong></li>
-                            <li>Откройте этот HTML файл в редакторе</li>
-                            <li>Найдите строку: <code>const SCRIPT_URL = 'YOUR_...';</code></li>
-                            <li>Замените URL на скопированный</li>
-                            <li>Сохраните и перезагрузите приложение</li>
-                        </ol>
-                        <p style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-gray); border-radius: 8px;">
-                            <strong>Пример правильного URL:</strong><br>
-                            <code style="font-size: 0.75rem;">https://script.google.com/macros/s/AKfycby.../exec</code>
-                        </p>
-                    </div>
-                </div>
-            `;
-        }
+  if(state.tab==="clients"){
+    app.innerHTML=`
+      <div class="card">
+        <h2>👥 Клиенты</h2>
+        <table>
+          <tr><th>ID</th><th>Имя</th><th>chat_id</th></tr>
+          ${state.clients.map(c=>`
+            <tr>
+              <td>${c.id}</td>
+              <td>${c.name}</td>
+              <td>${c.chat_id}</td>
+            </tr>`).join("")}
+        </table>
+      </div>`;
+  }
 
-        function renderHeader() {
-            const t = translations[state.lang];
-            return `
-                <header class="header">
-                    <div class="header-content">
-                        <div class="logo">
-                            <div class="logo-icon">E</div>
-                            <span>${t.appTitle}</span>
-                        </div>
-                        <div class="user-info">
-                            <div class="lang-switcher">
-                                <button class="lang-btn ${state.lang === 'ru' ? 'active' : ''}" onclick="setLang('ru')">RU</button>
-                                <button class="lang-btn ${state.lang === 'uz' ? 'active' : ''}" onclick="setLang('uz')">UZ</button>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-            `;
-        }
+  if(state.tab==="products"){
+    app.innerHTML=`
+      <div class="card">
+        <h2>📦 Товары</h2>
+        <table>
+          <tr><th>ID</th><th>Название</th><th>Ед.</th></tr>
+          ${state.products.map(p=>`
+            <tr>
+              <td>${p.id}</td>
+              <td>${p.name}</td>
+              <td>${p.unit}</td>
+            </tr>`).join("")}
+        </table>
+      </div>`;
+  }
 
-        function renderNav() {
-            const t = translations[state.lang];
-            return `
-                <nav class="nav-tabs">
-                    <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">${t.dashboard}</button>
-                    <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">${t.sales}</button>
-                    <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">${t.receipts}</button>
-                </nav>
-            `;
-        }
+  if(state.tab==="prices"){
+    app.innerHTML=`
+      <div class="card">
+        <h2>💵 Цены клиента</h2>
+        <label>Клиент</label>
+        <select onchange="loadClientPrices(this.value)">
+          <option value="">-- выбрать --</option>
+          ${state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`)}
+        </select>
+        <div id="pricesTable"></div>
+      </div>`;
+  }
 
-        function renderDashboard() {
-            const t = translations[state.lang];
-            const totalSales = state.salesData.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
-            const totalReceipts = state.receiptsData.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
-            
-            return `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-label">${t.totalSales}</div>
-                        <div class="stat-value">${totalSales.toLocaleString()} сум</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📥</div>
-                        <div class="stat-label">${t.totalReceipts}</div>
-                        <div class="stat-value">${totalReceipts.toLocaleString()} сум</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📦</div>
-                        <div class="stat-label">${t.productsCount}</div>
-                        <div class="stat-value">${state.products.length}</div>
-                    </div>
-                </div>
-            `;
-        }
+  if(state.tab==="sales"){
+    app.innerHTML=`
+      <div class="card">
+        <h2>💰 Продажа</h2>
+        <label>Клиент</label>
+        <select onchange="selectClient(this.value)">
+          <option value="">-- выбрать --</option>
+          ${state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`)}
+        </select>
+        <label>Товар</label>
+        <select id="saleProduct"></select>
+        <label>Кол-во</label>
+        <input id="qty" type="number" value="1" oninput="calcSum()"/>
+        <label>Цена</label>
+        <input id="price" readonly/>
+        <label>Сумма</label>
+        <input id="sum" readonly/>
+        <button class="primary" onclick="saveSale()">Сохранить</button>
+      </div>`;
+  }
 
-        function renderSalesForm() {
-            const t = translations[state.lang];
-            return `
-                <div class="card">
-                    <h3 class="card-title">${t.addSale}</h3>
-                    ${state.showSuccess ? `<div class="success-message">✓ ${t.success}</div>` : ''}
-                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
-                    <form onsubmit="handleSaleSubmit(event)">
-                        <div class="form-group">
-                            <label class="form-label">${t.client}</label>
-                            <select class="form-select" name="client" required>
-                                <option value="">${t.selectClient}</option>
-                                ${state.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.product}</label>
-                            <select class="form-select" name="product" required>
-                                <option value="">${t.selectProduct}</option>
-                                ${state.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.quantity}</label>
-                            <input type="number" class="form-input" name="quantity" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.amount}</label>
-                            <input type="number" class="form-input" name="amount" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.date}</label>
-                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">✓ ${t.save}</button>
-                    </form>
-                </div>
-            `;
-        }
+  if(state.tab==="receipts"){
+    app.innerHTML=`
+      <div class="card">
+        <h2>📥 Поступление</h2>
+        <label>Клиент</label>
+        <select id="rcClient">
+          ${state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`)}
+        </select>
+        <label>Сумма</label>
+        <input id="rcSum" type="number"/>
+        <button class="primary" onclick="saveReceipt()">Сохранить</button>
+      </div>`;
+  }
+}
 
-        function renderReceiptsForm() {
-            const t = translations[state.lang];
-            return `
-                <div class="card">
-                    <h3 class="card-title">${t.addReceipt}</h3>
-                    ${state.showSuccess ? `<div class="success-message">✓ ${t.success}</div>` : ''}
-                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
-                    <form onsubmit="handleReceiptSubmit(event)">
-                        <div class="form-group">
-                            <label class="form-label">${t.client}</label>
-                            <select class="form-select" name="client" required>
-                                <option value="">${t.selectClient}</option>
-                                ${state.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.product}</label>
-                            <select class="form-select" name="product" required>
-                                <option value="">${t.selectProduct}</option>
-                                ${state.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.quantity}</label>
-                            <input type="number" class="form-input" name="quantity" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.amount}</label>
-                            <input type="number" class="form-input" name="amount" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t.date}</label>
-                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">✓ ${t.save}</button>
-                    </form>
-                </div>
-            `;
-        }
+// ========= LOGIC =========
+async function loadClientPrices(id){
+  state.clientProducts=(await api("getClientProducts",{clientId:id})).products||[];
+  document.getElementById("pricesTable").innerHTML=`
+    <table>
+      <tr><th>Товар</th><th>Цена</th></tr>
+      ${state.clientProducts.map(p=>`
+        <tr><td>${p.product_name}</td><td>${p.price}</td></tr>`).join("")}
+    </table>`;
+}
 
-        function render() {
-            const t = translations[state.lang];
-            const app = document.getElementById('app');
-            
-            if (!isConfigured) {
-                app.innerHTML = renderSetupInstructions();
-                return;
-            }
-            
-            if (state.loading) {
-                app.innerHTML = `
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>${t.checkingConfig}</p>
-                    </div>
-                `;
-                return;
-            }
+async function selectClient(id){
+  state.selectedClient=id;
+  const r=await api("getClientProducts",{clientId:id});
+  state.clientProducts=r.products||[];
+  document.getElementById("saleProduct").innerHTML=
+    state.clientProducts.map(p=>
+      `<option value="${p.product_id}" data-price="${p.price}">${p.product_name}</option>`
+    ).join("");
+  calcSum();
+}
 
-            let content = '';
-            if (state.activeTab === 'dashboard') {
-                content = renderDashboard();
-            } else if (state.activeTab === 'sales') {
-                content = renderSalesForm();
-            } else if (state.activeTab === 'receipts') {
-                content = renderReceiptsForm();
-            }
+function calcSum(){
+  const p=document.querySelector("#saleProduct option:checked");
+  if(!p)return;
+  const price=p.dataset.price;
+  const qty=document.getElementById("qty").value;
+  document.getElementById("price").value=price;
+  document.getElementById("sum").value=price*qty;
+}
 
-            app.innerHTML = `
-                ${renderHeader()}
-                ${renderNav()}
-                <main class="content">
-                    ${content}
-                </main>
-            `;
-        }
+async function saveSale(){
+  const p=document.querySelector("#saleProduct option:checked");
+  await api("addSale",{
+    clientId:state.selectedClient,
+    productId:p.value,
+    quantity:document.getElementById("qty").value
+  });
+  alert("Продажа сохранена");
+}
 
-        // Event Handlers
-        window.setLang = function(lang) {
-            state.lang = lang;
-            render();
-        }
-
-        window.setTab = function(tab) {
-            state.activeTab = tab;
-            state.error = null;
-            render();
-        }
-
-        window.handleSaleSubmit = async function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            
-            const success = await addSale(
-                formData.get('client'),
-                formData.get('product'),
-                formData.get('quantity'),
-                formData.get('amount'),
-                formData.get('date')
-            );
-            
-            if (success) {
-                e.target.reset();
-            }
-            
-            render();
-        }
-
-        window.handleReceiptSubmit = async function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            
-            const success = await addReceipt(
-                formData.get('client'),
-                formData.get('product'),
-                formData.get('quantity'),
-                formData.get('amount'),
-                formData.get('date')
-            );
-            
-            if (success) {
-                e.target.reset();
-            }
-            
-            render();
-        }
-
-        // Initialize
-        async function init() {
-            state.loading = true;
-            render();
-
-            if (!isConfigured) {
-                state.loading = false;
-                render();
-                return;
-            }
-
-            // Initialize Telegram WebApp
-            if (window.Telegram?.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand();
-            }
-
-            await loadData();
-
-            state.loading = false;
-            render();
-        }
-
-        init();
-    </script>
+async function saveReceipt(){
+  await api("addReceipt",{
+    clientId:document.getElementById("rcClient").value,
+    amount:document.getElementById("rcSum").value
+  });
+  alert("Поступление сохранено");
+}
+</script>
 </body>
 </html>
