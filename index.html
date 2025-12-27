@@ -295,22 +295,43 @@ function calcSum(){
 }
 
 async function saveSale(){
-  const p=document.querySelector("#saleProduct option:checked");
+  const p = document.querySelector("#saleProduct option:checked");
+  if(!p){
+    alert("Выберите товар");
+    return;
+  }
+
   await api("addSale",{
-    clientId:state.selectedClient,
+    clientId: Number(state.selectedClient),
     productId: Number(p.value),
-    quantity:document.getElementById("qty").value
+    quantity: Number(document.getElementById("qty").value)
   });
+
+  // 🔄 СБРОС ВЫБРАННОГО КЛИЕНТА (ВОТ ЗДЕСЬ)
+  state.selectedClient = null;
+
+  // 🔄 ОЧИСТКА ПОЛЕЙ
+  document.getElementById("qty").value = 1;
+  document.getElementById("price").value = "";
+  document.getElementById("sum").value = "";
+  document.getElementById("saleProduct").innerHTML = "";
+
   alert("Продажа сохранена");
 }
 
+
 async function saveReceipt(){
   await api("addReceipt",{
-    clientId:document.getElementById("rcClient").value,
-    amount:document.getElementById("rcSum").value
+    clientId: Number(document.getElementById("rcClient").value),
+    amount: Number(document.getElementById("rcSum").value)
   });
+
+  // 🔄 ОЧИСТКА ФОРМЫ
+  document.getElementById("rcSum").value = "";
+
   alert("Поступление сохранено");
 }
+
 </script>
 </body>
 </html>
