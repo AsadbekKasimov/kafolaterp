@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -34,8 +34,6 @@
             background: var(--bg-gray);
             color: var(--text-dark);
             line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         .app-container {
@@ -48,7 +46,6 @@
             flex-direction: column;
         }
 
-        /* Header */
         .header {
             background: var(--bg-white);
             border-bottom: 1px solid var(--border-gray);
@@ -118,20 +115,6 @@
             box-shadow: var(--shadow);
         }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-red), var(--red-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        /* Navigation */
         .nav-tabs {
             display: flex;
             gap: 0.5rem;
@@ -159,7 +142,6 @@
             border-bottom-color: var(--primary-red);
         }
 
-        /* Content */
         .content {
             flex: 1;
             padding: 2rem 1.5rem;
@@ -174,20 +156,13 @@
             margin-bottom: 1.5rem;
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
         .card-title {
             font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-dark);
+            margin-bottom: 1rem;
         }
 
-        /* Form */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -209,7 +184,6 @@
             font-size: 1rem;
             font-family: 'Onest', sans-serif;
             transition: all 0.2s;
-            background: var(--bg-white);
         }
 
         .form-input:focus,
@@ -219,13 +193,6 @@
             box-shadow: 0 0 0 3px var(--red-light);
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        /* Buttons */
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -234,9 +201,6 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
             font-family: 'Onest', sans-serif;
         }
 
@@ -247,29 +211,52 @@
 
         .btn-primary:hover {
             background: var(--red-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-lg);
         }
 
         .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .btn-secondary {
-            background: var(--bg-gray);
-            color: var(--text-dark);
-            border: 1px solid var(--border-gray);
-        }
-
-        .btn-group {
+        .loading {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
         }
 
-        /* Stats Grid */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-gray);
+            border-top-color: var(--primary-red);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -283,27 +270,6 @@
             padding: 1.5rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-gray);
-            transition: all 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-gray);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-dark);
         }
 
         .stat-icon {
@@ -319,113 +285,54 @@
             color: var(--primary-red);
         }
 
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-gray);
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--bg-white);
-        }
-
-        .table th {
-            background: var(--bg-gray);
-            padding: 1rem;
-            text-align: left;
-            font-weight: 700;
-            color: var(--text-dark);
-            border-bottom: 2px solid var(--border-gray);
+        .stat-label {
             font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            color: var(--text-gray);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
-        .table td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-gray);
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--text-dark);
         }
 
-        .table tbody tr:hover {
-            background: var(--bg-gray);
+        .setup-instructions {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
         }
 
-        /* Loading */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--border-gray);
-            border-top-color: var(--primary-red);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Success Message */
-        .success-message {
-            background: #D1FAE5;
-            color: #065F46;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 600;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-gray);
-        }
-
-        .empty-icon {
-            font-size: 4rem;
+        .setup-instructions h2 {
+            color: var(--primary-red);
             margin-bottom: 1rem;
-            opacity: 0.3;
+        }
+
+        .setup-instructions ol {
+            margin-left: 1.5rem;
+        }
+
+        .setup-instructions li {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .setup-instructions code {
+            background: var(--bg-gray);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
         }
 
         @media (max-width: 768px) {
             .header {
                 padding: 1rem;
             }
-
             .content {
                 padding: 1.5rem 1rem;
             }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -436,8 +343,21 @@
     <div id="app" class="app-container"></div>
 
     <script>
-        // КОНФИГУРАЦИЯ - ЗАМЕНИТЕ НА ВАШ URL Google Apps Script
+        // ============================================
+        // ВАЖНО! ЗАМЕНИТЕ URL НИЖЕ НА ВАШ!
+        // ============================================
+        // Получите URL из Google Apps Script:
+        // 1. Откройте Apps Script
+        // 2. Нажмите "Развернуть" → "Управление развертываниями"
+        // 3. Скопируйте "URL веб-приложения"
+        // 4. Вставьте ниже
+        // ============================================
+        
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6N8z6_WEiiIZzRn2kxb5jTLHeZ1mea0_SxbCiTVeTTilC0N1mnVtuYBFGbZV3igSb8A/exec';
+        
+        // Проверка настройки URL
+        const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && 
+                            SCRIPT_URL.includes('script.google.com');
         
         // Translations
         const translations = {
@@ -454,19 +374,16 @@
                 amount: 'Сумма',
                 date: 'Дата',
                 save: 'Сохранить',
-                cancel: 'Отменить',
                 totalSales: 'Общие продажи',
                 totalReceipts: 'Общие поступления',
                 productsCount: 'Товаров',
-                recentTransactions: 'Последние операции',
-                noData: 'Нет данных',
                 loading: 'Загрузка...',
                 success: 'Успешно сохранено!',
                 selectClient: 'Выберите клиента',
                 selectProduct: 'Выберите товар',
-                enterQuantity: 'Введите количество',
-                enterAmount: 'Введите сумму',
-                saving: 'Сохранение...'
+                notConfigured: 'Приложение не настроено',
+                setupTitle: 'Инструкция по настройке',
+                checkingConfig: 'Проверка настроек...'
             },
             uz: {
                 appTitle: 'ERP Tizimi',
@@ -481,19 +398,16 @@
                 amount: 'Summa',
                 date: 'Sana',
                 save: 'Saqlash',
-                cancel: 'Bekor qilish',
                 totalSales: 'Jami sotuvlar',
                 totalReceipts: "Jami qabul qilishlar",
                 productsCount: 'Mahsulotlar',
-                recentTransactions: 'Oxirgi operatsiyalar',
-                noData: "Ma'lumot yo'q",
                 loading: 'Yuklanmoqda...',
                 success: 'Muvaffaqiyatli saqlandi!',
                 selectClient: 'Mijozni tanlang',
                 selectProduct: 'Mahsulotni tanlang',
-                enterQuantity: 'Miqdorni kiriting',
-                enterAmount: 'Summani kiriting',
-                saving: 'Saqlanmoqda...'
+                notConfigured: 'Ilova sozlanmagan',
+                setupTitle: 'Sozlash bo'yicha qo'llanma',
+                checkingConfig: 'Sozlamalar tekshirilmoqda...'
             }
         };
 
@@ -501,18 +415,21 @@
         let state = {
             lang: 'ru',
             activeTab: 'dashboard',
-            loading: false,
+            loading: true,
             showSuccess: false,
-            currentUser: null,
+            error: null,
             clients: [],
             products: [],
             salesData: [],
-            receiptsData: [],
-            isSaving: false
+            receiptsData: []
         };
 
         // API Functions
         async function apiCall(action, params = {}) {
+            if (!isConfigured) {
+                throw new Error('SCRIPT_URL не настроен');
+            }
+
             const url = new URL(SCRIPT_URL);
             url.searchParams.append('action', action);
             
@@ -521,79 +438,108 @@
             });
 
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             return await response.json();
         }
 
-        async function loadClients() {
-            const result = await apiCall('getClients');
-            if (result.success) {
-                state.clients = result.clients;
-            }
-        }
+        async function loadData() {
+            try {
+                const [clients, products, reportData] = await Promise.all([
+                    apiCall('getClients'),
+                    apiCall('getProducts'),
+                    apiCall('getReportData', {
+                        clientName: '',
+                        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        endDate: new Date().toISOString().split('T')[0]
+                    })
+                ]);
 
-        async function loadProducts() {
-            const result = await apiCall('getProducts');
-            if (result.success) {
-                state.products = result.products;
+                if (clients.success) state.clients = clients.clients || [];
+                if (products.success) state.products = products.products || [];
+                if (reportData.success) {
+                    state.salesData = reportData.data.sales || [];
+                    state.receiptsData = reportData.data.receipts || [];
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                state.error = error.message;
             }
         }
 
         async function addSale(clientName, productName, quantity, amount, date) {
-            state.isSaving = true;
-            render();
-            
-            const result = await apiCall('addSale', {
-                clientName, productName, quantity, amount, date
-            });
-            
-            state.isSaving = false;
-            
-            if (result.success) {
-                state.showSuccess = true;
-                setTimeout(() => {
-                    state.showSuccess = false;
-                    render();
-                }, 3000);
+            try {
+                const result = await apiCall('addSale', {
+                    clientName, productName, quantity, amount, date
+                });
+                
+                if (result.success) {
+                    state.showSuccess = true;
+                    setTimeout(() => {
+                        state.showSuccess = false;
+                        render();
+                    }, 3000);
+                    await loadData();
+                }
+                
+                return result.success;
+            } catch (error) {
+                state.error = error.message;
+                return false;
             }
-            
-            return result.success;
         }
 
         async function addReceipt(clientName, productName, quantity, amount, date) {
-            state.isSaving = true;
-            render();
-            
-            const result = await apiCall('addReceipt', {
-                clientName, productName, quantity, amount, date
-            });
-            
-            state.isSaving = false;
-            
-            if (result.success) {
-                state.showSuccess = true;
-                setTimeout(() => {
-                    state.showSuccess = false;
-                    render();
-                }, 3000);
-            }
-            
-            return result.success;
-        }
-
-        async function loadDashboardData() {
-            const result = await apiCall('getReportData', {
-                clientName: '',
-                startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                endDate: new Date().toISOString().split('T')[0]
-            });
-            
-            if (result.success) {
-                state.salesData = result.data.sales;
-                state.receiptsData = result.data.receipts;
+            try {
+                const result = await apiCall('addReceipt', {
+                    clientName, productName, quantity, amount, date
+                });
+                
+                if (result.success) {
+                    state.showSuccess = true;
+                    setTimeout(() => {
+                        state.showSuccess = false;
+                        render();
+                    }, 3000);
+                    await loadData();
+                }
+                
+                return result.success;
+            } catch (error) {
+                state.error = error.message;
+                return false;
             }
         }
 
         // Render Functions
+        function renderSetupInstructions() {
+            const t = translations[state.lang];
+            return `
+                <div class="setup-instructions">
+                    <div class="card">
+                        <h2>${t.setupTitle}</h2>
+                        <p style="color: var(--primary-red); font-weight: 600; margin-bottom: 1rem;">
+                            ⚠️ ${t.notConfigured}
+                        </p>
+                        <ol>
+                            <li>Откройте Google Apps Script редактор</li>
+                            <li>Нажмите <strong>Развернуть</strong> → <strong>Управление развертываниями</strong></li>
+                            <li>Скопируйте <strong>URL веб-приложения</strong></li>
+                            <li>Откройте этот HTML файл в редакторе</li>
+                            <li>Найдите строку: <code>const SCRIPT_URL = 'YOUR_...';</code></li>
+                            <li>Замените URL на скопированный</li>
+                            <li>Сохраните и перезагрузите приложение</li>
+                        </ol>
+                        <p style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-gray); border-radius: 8px;">
+                            <strong>Пример правильного URL:</strong><br>
+                            <code style="font-size: 0.75rem;">https://script.google.com/macros/s/AKfycby.../exec</code>
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderHeader() {
             const t = translations[state.lang];
             return `
@@ -608,9 +554,6 @@
                                 <button class="lang-btn ${state.lang === 'ru' ? 'active' : ''}" onclick="setLang('ru')">RU</button>
                                 <button class="lang-btn ${state.lang === 'uz' ? 'active' : ''}" onclick="setLang('uz')">UZ</button>
                             </div>
-                            ${state.currentUser ? `
-                                <div class="user-avatar">${state.currentUser.name[0]}</div>
-                            ` : ''}
                         </div>
                     </div>
                 </header>
@@ -651,43 +594,6 @@
                         <div class="stat-value">${state.products.length}</div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">${t.recentTransactions}</h3>
-                    </div>
-                    ${state.salesData.length > 0 ? `
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>${t.date}</th>
-                                        <th>${t.client}</th>
-                                        <th>${t.product}</th>
-                                        <th>${t.quantity}</th>
-                                        <th>${t.amount}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${state.salesData.slice(0, 10).map(sale => `
-                                        <tr>
-                                            <td>${new Date(sale.date).toLocaleDateString('ru-RU')}</td>
-                                            <td>${sale.client}</td>
-                                            <td>${sale.product}</td>
-                                            <td>${sale.quantity}</td>
-                                            <td>${parseFloat(sale.amount).toLocaleString()} сум</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    ` : `
-                        <div class="empty-state">
-                            <div class="empty-icon">📭</div>
-                            <p>${t.noData}</p>
-                        </div>
-                    `}
-                </div>
             `;
         }
 
@@ -695,47 +601,37 @@
             const t = translations[state.lang];
             return `
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">${t.addSale}</h3>
-                    </div>
+                    <h3 class="card-title">${t.addSale}</h3>
                     ${state.showSuccess ? `<div class="success-message">✓ ${t.success}</div>` : ''}
+                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
                     <form onsubmit="handleSaleSubmit(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">${t.client}</label>
-                                <select class="form-select" name="client" required>
-                                    <option value="">${t.selectClient}</option>
-                                    ${state.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">${t.product}</label>
-                                <select class="form-select" name="product" required>
-                                    <option value="">${t.selectProduct}</option>
-                                    ${state.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.client}</label>
+                            <select class="form-select" name="client" required>
+                                <option value="">${t.selectClient}</option>
+                                ${state.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+                            </select>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">${t.quantity}</label>
-                                <input type="number" class="form-input" name="quantity" placeholder="${t.enterQuantity}" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">${t.amount} (сум)</label>
-                                <input type="number" class="form-input" name="amount" placeholder="${t.enterAmount}" required>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.product}</label>
+                            <select class="form-select" name="product" required>
+                                <option value="">${t.selectProduct}</option>
+                                ${state.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.quantity}</label>
+                            <input type="number" class="form-input" name="quantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.amount}</label>
+                            <input type="number" class="form-input" name="amount" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">${t.date}</label>
                             <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                         </div>
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-primary" ${state.isSaving ? 'disabled' : ''}>
-                                ✓ ${state.isSaving ? t.saving : t.save}
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t.cancel}</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">✓ ${t.save}</button>
                     </form>
                 </div>
             `;
@@ -745,47 +641,37 @@
             const t = translations[state.lang];
             return `
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">${t.addReceipt}</h3>
-                    </div>
+                    <h3 class="card-title">${t.addReceipt}</h3>
                     ${state.showSuccess ? `<div class="success-message">✓ ${t.success}</div>` : ''}
+                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
                     <form onsubmit="handleReceiptSubmit(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">${t.client}</label>
-                                <select class="form-select" name="client" required>
-                                    <option value="">${t.selectClient}</option>
-                                    ${state.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">${t.product}</label>
-                                <select class="form-select" name="product" required>
-                                    <option value="">${t.selectProduct}</option>
-                                    ${state.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.client}</label>
+                            <select class="form-select" name="client" required>
+                                <option value="">${t.selectClient}</option>
+                                ${state.clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+                            </select>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">${t.quantity}</label>
-                                <input type="number" class="form-input" name="quantity" placeholder="${t.enterQuantity}" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">${t.amount} (сум)</label>
-                                <input type="number" class="form-input" name="amount" placeholder="${t.enterAmount}" required>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.product}</label>
+                            <select class="form-select" name="product" required>
+                                <option value="">${t.selectProduct}</option>
+                                ${state.products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.quantity}</label>
+                            <input type="number" class="form-input" name="quantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.amount}</label>
+                            <input type="number" class="form-input" name="amount" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">${t.date}</label>
                             <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                         </div>
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-primary" ${state.isSaving ? 'disabled' : ''}>
-                                ✓ ${state.isSaving ? t.saving : t.save}
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t.cancel}</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">✓ ${t.save}</button>
                     </form>
                 </div>
             `;
@@ -795,10 +681,16 @@
             const t = translations[state.lang];
             const app = document.getElementById('app');
             
+            if (!isConfigured) {
+                app.innerHTML = renderSetupInstructions();
+                return;
+            }
+            
             if (state.loading) {
                 app.innerHTML = `
                     <div class="loading">
                         <div class="spinner"></div>
+                        <p>${t.checkingConfig}</p>
                     </div>
                 `;
                 return;
@@ -823,17 +715,18 @@
         }
 
         // Event Handlers
-        function setLang(lang) {
+        window.setLang = function(lang) {
             state.lang = lang;
             render();
         }
 
-        function setTab(tab) {
+        window.setTab = function(tab) {
             state.activeTab = tab;
+            state.error = null;
             render();
         }
 
-        async function handleSaleSubmit(e) {
+        window.handleSaleSubmit = async function(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
             
@@ -847,13 +740,12 @@
             
             if (success) {
                 e.target.reset();
-                await loadDashboardData();
             }
             
             render();
         }
 
-        async function handleReceiptSubmit(e) {
+        window.handleReceiptSubmit = async function(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
             
@@ -867,7 +759,6 @@
             
             if (success) {
                 e.target.reset();
-                await loadDashboardData();
             }
             
             render();
@@ -878,28 +769,20 @@
             state.loading = true;
             render();
 
+            if (!isConfigured) {
+                state.loading = false;
+                render();
+                return;
+            }
+
             // Initialize Telegram WebApp
             if (window.Telegram?.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.ready();
                 tg.expand();
-                
-                const user = tg.initDataUnsafe?.user;
-                if (user) {
-                    state.currentUser = {
-                        name: user.first_name,
-                        chatId: user.id
-                    };
-                }
-            } else {
-                state.currentUser = { name: 'Demo', chatId: '123' };
             }
 
-            await Promise.all([
-                loadClients(),
-                loadProducts(),
-                loadDashboardData()
-            ]);
+            await loadData();
 
             state.loading = false;
             render();
