@@ -1,9 +1,9 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP System</title>
+    <title>ERP System v2</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -73,7 +73,17 @@
         .modal-title { font-size: 1.5rem; font-weight: 700; }
         .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-gray); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
         .modal-close:hover { background: var(--bg-gray); }
-        .recent-transactions { margin-top: 2rem; }
+        .report-summary { background: var(--bg-gray); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .report-row { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 1rem; }
+        .report-row.total { font-size: 1.25rem; font-weight: 700; padding-top: 0.75rem; border-top: 2px solid var(--border-gray); }
+        .report-label { color: var(--text-gray); }
+        .report-value { font-weight: 600; color: var(--text-dark); }
+        .report-value.positive { color: var(--green); }
+        .report-value.negative { color: var(--primary-red); }
+        .reconciliation-table td { text-align: right; }
+        .reconciliation-table td:first-child { text-align: left; }
+        .reconciliation-table td:nth-child(2) { text-align: center; }
+        .balance-row { font-weight: 700; background: #FFF9E6 !important; }
         @media (max-width: 768px) {
             .header { padding: 1rem; }
             .content { padding: 1.5rem 1rem; }
@@ -82,6 +92,10 @@
             .nav-tabs { padding: 1rem 1rem 0; }
             .table-actions { flex-direction: column; }
         }
+        @media print {
+            .header, .nav-tabs, .btn { display: none; }
+            .content { padding: 0; }
+        }
     </style>
 </head>
 <body>
@@ -89,20 +103,21 @@
     <div id="modalContainer"></div>
     
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzAivvLeKkdYOf-Xt3cXzC1rDxl42fuAp7hTbEuglHVq02UGNIzS9CIbB3lsndPCleLtQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR5xTYniAkVC8fxzqpZmPTo5V6WF3L8dxcV-WgMBxuBsJrLcAcfhb7Az3ZwoVIGss/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
             ru: {
                 appTitle: 'ERP Система',
                 dashboard: 'Панель',
-                sales: 'Продажи',
-                receipts: 'Поступления',
+                sales: 'Отгрузки',
+                receipts: 'Оплаты',
                 clients: 'Клиенты',
                 products: 'Товары',
                 prices: 'Цены',
-                addSale: 'Добавить продажу',
-                addReceipt: 'Добавить поступление',
+                report: 'Акт сверки',
+                addSale: 'Добавить отгрузку',
+                addReceipt: 'Добавить оплату',
                 addClient: 'Добавить клиента',
                 addProduct: 'Добавить товар',
                 setPrice: 'Установить цену',
@@ -123,8 +138,8 @@
                 unit: 'Единица',
                 category: 'Категория',
                 description: 'Описание',
-                totalSales: 'Общие продажи',
-                totalReceipts: 'Общие поступления',
+                totalSales: 'Общие отгрузки',
+                totalReceipts: 'Общие оплаты',
                 clientsCount: 'Клиентов',
                 productsCount: 'Товаров',
                 actions: 'Действия',
@@ -136,18 +151,38 @@
                 confirmDelete: 'Вы уверены?',
                 enterPrice: 'Введите цену',
                 sum: 'сум',
-                recentTransactions: 'Последние операции'
+                startDate: 'Дата начала',
+                endDate: 'Дата окончания',
+                generate: 'Сформировать',
+                reconciliationAct: 'Акт сверки взаиморасчетов',
+                period: 'Период',
+                type: 'Тип',
+                shipped: 'Передано',
+                received: 'Принято',
+                balance: 'Сальдо',
+                debt: 'Задолженность клиента',
+                overpayment: 'Переплата клиента',
+                print: 'Печать',
+                paymentType: 'Тип оплаты',
+                cash: 'Наличные',
+                card: 'Карта',
+                transfer: 'Перечисление',
+                bankTransfer: 'Безнал',
+                docNumber: 'Номер документа',
+                note: 'Примечание',
+                initialBalance: '***Начальный баланс***'
             },
             uz: {
                 appTitle: 'ERP Tizimi',
                 dashboard: 'Boshqaruv',
-                sales: 'Sotuvlar',
-                receipts: 'Qabul',
+                sales: 'Yetkazish',
+                receipts: "To'lovlar",
                 clients: 'Mijozlar',
                 products: 'Mahsulotlar',
                 prices: 'Narxlar',
-                addSale: "Sotuv qo'shish",
-                addReceipt: "Qabul qo'shish",
+                report: 'Sverka akti',
+                addSale: "Yetkazish qo'shish",
+                addReceipt: "To'lov qo'shish",
                 addClient: "Mijoz qo'shish",
                 addProduct: "Mahsulot qo'shish",
                 setPrice: "Narx o'rnatish",
@@ -168,8 +203,8 @@
                 unit: "O'lchov",
                 category: 'Kategoriya',
                 description: 'Tavsif',
-                totalSales: 'Jami sotuvlar',
-                totalReceipts: 'Jami qabul',
+                totalSales: 'Jami yetkazish',
+                totalReceipts: "Jami to'lovlar",
                 clientsCount: 'Mijozlar',
                 productsCount: 'Mahsulotlar',
                 actions: 'Harakatlar',
@@ -181,7 +216,26 @@
                 confirmDelete: 'Ishonchingiz komilmi?',
                 enterPrice: 'Narxni kiriting',
                 sum: 'sum',
-                recentTransactions: 'Oxirgi operatsiyalar'
+                startDate: 'Boshlanish',
+                endDate: 'Tugash',
+                generate: 'Yaratish',
+                reconciliationAct: 'Sverka akti',
+                period: 'Davr',
+                type: 'Turi',
+                shipped: 'Yetkazildi',
+                received: 'Qabul qilindi',
+                balance: 'Balans',
+                debt: 'Qarz',
+                overpayment: "Ortiqcha to'lov",
+                print: 'Chop etish',
+                paymentType: "To'lov turi",
+                cash: 'Naqd',
+                card: 'Karta',
+                transfer: "O'tkazma",
+                bankTransfer: 'Bank',
+                docNumber: 'Hujjat raqami',
+                note: 'Izoh',
+                initialBalance: '***Boshlang\'ich balans***'
             }
         };
         
@@ -209,28 +263,19 @@
                     url.searchParams.append(key, params[key]);
                 }
             });
-            
-            console.log('API Call:', action, params);
-            
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
-            const result = await response.json();
-            
-            console.log('API Response:', result);
-            
-            return result;
+            return await response.json();
         }
         
         async function loadClients() {
             const result = await apiCall('getClients');
             if (result.success) state.clients = result.clients || [];
-            console.log('Loaded clients:', state.clients.length);
         }
         
         async function loadProducts() {
             const result = await apiCall('getProducts');
             if (result.success) state.products = result.products || [];
-            console.log('Loaded products:', state.products.length);
         }
         
         async function loadClientProducts(clientId) {
@@ -238,26 +283,34 @@
             if (result.success) state.clientProducts[clientId] = result.products || [];
         }
         
-        async function loadSales() {
-            const result = await apiCall('getSales', {
-                startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                endDate: new Date().toISOString().split('T')[0]
-            });
-            if (result.success) {
-                state.salesData = result.sales || [];
-                console.log('Loaded sales:', state.salesData.length, state.salesData);
+        async function loadSales(clientId = null, startDate = null, endDate = null) {
+            const params = {};
+            if (clientId) params.clientId = clientId;
+            if (startDate) params.startDate = startDate;
+            if (endDate) params.endDate = endDate;
+            
+            if (!startDate && !endDate) {
+                params.startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                params.endDate = new Date().toISOString().split('T')[0];
             }
+            
+            const result = await apiCall('getSales', params);
+            if (result.success) state.salesData = result.sales || [];
         }
         
-        async function loadReceipts() {
-            const result = await apiCall('getReceipts', {
-                startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                endDate: new Date().toISOString().split('T')[0]
-            });
-            if (result.success) {
-                state.receiptsData = result.receipts || [];
-                console.log('Loaded receipts:', state.receiptsData.length, state.receiptsData);
+        async function loadReceipts(clientId = null, startDate = null, endDate = null) {
+            const params = {};
+            if (clientId) params.clientId = clientId;
+            if (startDate) params.startDate = startDate;
+            if (endDate) params.endDate = endDate;
+            
+            if (!startDate && !endDate) {
+                params.startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                params.endDate = new Date().toISOString().split('T')[0];
             }
+            
+            const result = await apiCall('getReceipts', params);
+            if (result.success) state.receiptsData = result.receipts || [];
         }
         
         function renderHeader() {
@@ -278,6 +331,7 @@
             return `
                 <nav class="nav-tabs">
                     <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">${t('dashboard')}</button>
+                    <button class="nav-tab ${state.activeTab === 'report' ? 'active' : ''}" onclick="setTab('report')">${t('report')}</button>
                     <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">${t('sales')}</button>
                     <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">${t('receipts')}</button>
                     <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">${t('clients')}</button>
@@ -288,88 +342,193 @@
         }
         
         function renderDashboard() {
-            console.log('Rendering dashboard with sales:', state.salesData);
-            console.log('Rendering dashboard with receipts:', state.receiptsData);
-            
-            const totalSales = state.salesData.reduce((sum, s) => {
-                const amount = parseFloat(s.amount || 0);
-                console.log('Sale amount:', s.amount, 'parsed:', amount);
-                return sum + amount;
-            }, 0);
-            
-            const totalReceipts = state.receiptsData.reduce((sum, r) => {
-                const amount = parseFloat(r.amount || 0);
-                console.log('Receipt amount:', r.amount, 'parsed:', amount);
-                return sum + amount;
-            }, 0);
-            
-            console.log('Total sales calculated:', totalSales);
-            console.log('Total receipts calculated:', totalReceipts);
+            const totalSales = state.salesData.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+            const totalReceipts = state.receiptsData.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
             
             return `
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon">??</div>
+                        <div class="stat-icon">📊</div>
                         <div class="stat-label">${t('totalSales')}</div>
                         <div class="stat-value">${totalSales.toLocaleString('ru-RU')} ${t('sum')}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">??</div>
+                        <div class="stat-icon">📥</div>
                         <div class="stat-label">${t('totalReceipts')}</div>
                         <div class="stat-value">${totalReceipts.toLocaleString('ru-RU')} ${t('sum')}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">??</div>
+                        <div class="stat-icon">👥</div>
                         <div class="stat-label">${t('clientsCount')}</div>
                         <div class="stat-value">${state.clients.length}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">??</div>
+                        <div class="stat-icon">📦</div>
                         <div class="stat-label">${t('productsCount')}</div>
                         <div class="stat-value">${state.products.length}</div>
                     </div>
                 </div>
-                
-                <div class="card recent-transactions">
-                    <div class="card-header">
-                        <h3 class="card-title">${t('recentTransactions')}</h3>
-                    </div>
-                    ${state.salesData.length > 0 ? `
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>${t('date')}</th>
-                                        <th>${t('client')}</th>
-                                        <th>${t('product')}</th>
-                                        <th>${t('quantity')}</th>
-                                        <th>${t('amount')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${state.salesData.slice(0, 10).map(sale => `
-                                        <tr>
-                                            <td>${new Date(sale.date).toLocaleDateString('ru-RU')}</td>
-                                            <td>${sale.client}</td>
-                                            <td>${sale.product}</td>
-                                            <td>${sale.quantity}</td>
-                                            <td>${parseFloat(sale.amount).toLocaleString('ru-RU')} ${t('sum')}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
+            `;
+        }
+        
+        function renderReport() {
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t('reconciliationAct')}</h3>
+                    <form onsubmit="generateReport(event)">
+                        <div class="form-group">
+                            <label class="form-label">${t('client')}</label>
+                            <select class="form-select" name="client" required>
+                                <option value="">${t('selectClient')}</option>
+                                ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
                         </div>
-                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t('noData')}</p></div>`}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('startDate')}</label>
+                                <input type="date" class="form-input" name="startDate" value="${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('endDate')}</label>
+                                <input type="date" class="form-input" name="endDate" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">📊 ${t('generate')}</button>
+                        </div>
+                    </form>
+                    
+                    <div id="reportResult"></div>
                 </div>
             `;
+        }
+        
+        function renderReportResult(clientName, startDate, endDate, sales, receipts) {
+            const totalSales = sales.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+            const totalReceipts = receipts.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+            const balance = totalSales - totalReceipts;
+            
+            // Объединяем и сортируем все операции по дате
+            const allOperations = [
+                ...sales.map(s => ({
+                    date: new Date(s.date),
+                    type: s.docNumber || `${t('sales')} #${s.id}`,
+                    shipped: s.amount,
+                    received: 0,
+                    isBalance: false
+                })),
+                ...receipts.map(r => ({
+                    date: new Date(r.date),
+                    type: r.docNumber || `${t('receipts')} #${r.id}`,
+                    shipped: 0,
+                    received: r.amount,
+                    isBalance: false
+                }))
+            ].sort((a, b) => a.date - b.date);
+            
+            // Добавляем начальный баланс в начало
+            allOperations.unshift({
+                date: new Date(startDate),
+                type: t('initialBalance'),
+                shipped: 0,
+                received: 0,
+                isBalance: true
+            });
+            
+            return `
+                <div style="margin-top: 2rem;">
+                    <div class="report-summary">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.125rem;">${t('reconciliationAct')}</h4>
+                        <div class="report-row">
+                            <span class="report-label">${t('client')}:</span>
+                            <span class="report-value">${clientName}</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">${t('period')}:</span>
+                            <span class="report-value">${new Date(startDate).toLocaleDateString('ru-RU')} - ${new Date(endDate).toLocaleDateString('ru-RU')}</span>
+                        </div>
+                        <div class="report-row total">
+                            <span class="report-label">${t('balance')}:</span>
+                            <span class="report-value ${balance > 0 ? 'negative' : balance < 0 ? 'positive' : ''}">
+                                ${Math.abs(balance).toLocaleString('ru-RU')} ${t('sum')} 
+                                ${balance > 0 ? '(' + t('debt') + ')' : balance < 0 ? '(' + t('overpayment') + ')' : ''}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 1.5rem 0 1rem; font-size: 1.125rem;">${t('reconciliationAct')}</h4>
+                    <div class="table-container">
+                        <table class="table reconciliation-table">
+                            <thead>
+                                <tr>
+                                    <th>${t('type')}</th>
+                                    <th>${t('date')}</th>
+                                    <th>${t('shipped')}</th>
+                                    <th>${t('received')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${allOperations.map(op => `
+                                    <tr class="${op.isBalance ? 'balance-row' : ''}">
+                                        <td>${op.type}</td>
+                                        <td style="text-align: center;">${op.date.toLocaleDateString('ru-RU')}</td>
+                                        <td>${op.shipped > 0 ? parseFloat(op.shipped).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
+                                        <td>${op.received > 0 ? parseFloat(op.received).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
+                                    </tr>
+                                `).join('')}
+                                <tr style="font-weight: 700; background: var(--bg-gray);">
+                                    <td colspan="2">${t('totalSales')} / ${t('totalReceipts')}</td>
+                                    <td>${totalSales.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td>${totalReceipts.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                </tr>
+                                <tr class="balance-row">
+                                    <td colspan="2">${t('balance')}</td>
+                                    <td colspan="2">${Math.abs(balance).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${balance > 0 ? t('debt') : balance < 0 ? t('overpayment') : ''}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="btn-group" style="margin-top: 1.5rem;">
+                        <button class="btn btn-secondary" onclick="window.print()">🖨️ ${t('print')}</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function generateReport(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const startDate = formData.get('startDate');
+            const endDate = formData.get('endDate');
+            
+            const client = state.clients.find(c => c.id == clientId);
+            
+            try {
+                const [salesResult, receiptsResult] = await Promise.all([
+                    apiCall('getSales', { clientId, startDate, endDate }),
+                    apiCall('getReceipts', { clientId, startDate, endDate })
+                ]);
+                
+                const sales = salesResult.success ? salesResult.sales || [] : [];
+                const receipts = receiptsResult.success ? receiptsResult.receipts || [] : [];
+                
+                document.getElementById('reportResult').innerHTML = renderReportResult(
+                    client.name, startDate, endDate, sales, receipts
+                );
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
         }
         
         function renderSalesForm() {
             return `
                 <div class="card">
                     <h3 class="card-title">${t('addSale')}</h3>
-                    ${state.showSuccess ? `<div class="success-message">? ${t('success')}</div>` : ''}
-                    ${state.error ? `<div class="error-message">? ${state.error}</div>` : ''}
+                    ${state.showSuccess ? `<div class="success-message">✓ ${t('success')}</div>` : ''}
+                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
                     <form onsubmit="handleSaleSubmit(event)">
                         <div class="form-group">
                             <label class="form-label">${t('client')}</label>
@@ -386,6 +545,16 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
+                                <label class="form-label">${t('docNumber')}</label>
+                                <input type="text" class="form-input" name="docNumber" placeholder="Отгрузка #...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('date')}</label>
+                                <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label class="form-label">${t('quantity')}</label>
                                 <input type="number" class="form-input" name="quantity" id="quantityInput" onchange="calculateAmount()" required>
                             </div>
@@ -398,13 +567,9 @@
                                 <input type="number" class="form-input" name="amount" id="amountInput" readonly required>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">${t('date')}</label>
-                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
-                        </div>
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-primary">? ${t('save')}</button>
-                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">? ${t('cancel')}</button>
+                            <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t('cancel')}</button>
                         </div>
                     </form>
                 </div>
@@ -415,7 +580,7 @@
             return `
                 <div class="card">
                     <h3 class="card-title">${t('addReceipt')}</h3>
-                    ${state.showSuccess ? `<div class="success-message">? ${t('success')}</div>` : ''}
+                    ${state.showSuccess ? `<div class="success-message">✓ ${t('success')}</div>` : ''}
                     <form onsubmit="handleReceiptSubmit(event)">
                         <div class="form-row">
                             <div class="form-group">
@@ -426,30 +591,36 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t('product')}</label>
-                                <select class="form-select" name="product" required>
-                                    <option value="">${t('selectProduct')}</option>
-                                    ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                <label class="form-label">${t('paymentType')}</label>
+                                <select class="form-select" name="paymentType" required>
+                                    <option value="Наличные">${t('cash')}</option>
+                                    <option value="Карта">${t('card')}</option>
+                                    <option value="Перечисление">${t('transfer')}</option>
+                                    <option value="Безнал">${t('bankTransfer')}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">${t('quantity')}</label>
-                                <input type="number" class="form-input" name="quantity" required>
+                                <label class="form-label">${t('docNumber')}</label>
+                                <input type="text" class="form-input" name="docNumber" placeholder="Оплата клиента #...">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t('amount')} (${t('sum')})</label>
-                                <input type="number" class="form-input" name="amount" required>
+                                <label class="form-label">${t('date')}</label>
+                                <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">${t('date')}</label>
-                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                            <label class="form-label">${t('amount')} (${t('sum')})</label>
+                            <input type="number" class="form-input" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t('note')}</label>
+                            <input type="text" class="form-input" name="note" placeholder="${t('note')}">
                         </div>
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-primary">? ${t('save')}</button>
-                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">? ${t('cancel')}</button>
+                            <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t('cancel')}</button>
                         </div>
                     </form>
                 </div>
@@ -491,7 +662,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t('noData')}</p></div>`}
+                    ` : `<div class="empty-state"><div class="empty-icon">👥</div><p>${t('noData')}</p></div>`}
                 </div>
             `;
         }
@@ -531,7 +702,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t('noData')}</p></div>`}
+                    ` : `<div class="empty-state"><div class="empty-icon">📦</div><p>${t('noData')}</p></div>`}
                 </div>
             `;
         }
@@ -562,7 +733,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title">${client ? t('edit') : t('addClient')}</h3>
-                            <button class="modal-close" onclick="closeModal()">?</button>
+                            <button class="modal-close" onclick="closeModal()">×</button>
                         </div>
                         <form onsubmit="saveClient(event, ${clientId})">
                             <div class="form-group">
@@ -582,8 +753,8 @@
                                 <input type="text" class="form-input" name="notes" value="${client ? client.notes : ''}">
                             </div>
                             <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">? ${t('save')}</button>
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t('cancel')}</button>
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
                             </div>
                         </form>
                     </div>
@@ -599,7 +770,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title">${product ? t('edit') : t('addProduct')}</h3>
-                            <button class="modal-close" onclick="closeModal()">?</button>
+                            <button class="modal-close" onclick="closeModal()">×</button>
                         </div>
                         <form onsubmit="saveProduct(event, ${productId})">
                             <div class="form-group">
@@ -619,8 +790,8 @@
                                 <input type="text" class="form-input" name="description" value="${product ? product.description : ''}">
                             </div>
                             <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">? ${t('save')}</button>
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t('cancel')}</button>
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
                             </div>
                         </form>
                     </div>
@@ -635,7 +806,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title">${t('setPrice')}</h3>
-                            <button class="modal-close" onclick="closeModal()">?</button>
+                            <button class="modal-close" onclick="closeModal()">×</button>
                         </div>
                         <form onsubmit="savePrice(event)">
                             <div class="form-group">
@@ -657,8 +828,8 @@
                                 <input type="number" class="form-input" name="price" placeholder="${t('enterPrice')}" required>
                             </div>
                             <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">? ${t('save')}</button>
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t('cancel')}</button>
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
                             </div>
                         </form>
                     </div>
@@ -740,7 +911,16 @@
             const client = state.clients.find(c => c.id == clientId);
             const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('addSale', { clientId, clientName: client.name, productId, productName: product.name, quantity: formData.get('quantity'), price: formData.get('price'), date: formData.get('date') });
+                const result = await apiCall('addSale', { 
+                    clientId, 
+                    clientName: client.name, 
+                    productId, 
+                    productName: product.name, 
+                    quantity: formData.get('quantity'), 
+                    price: formData.get('price'), 
+                    date: formData.get('date'),
+                    docNumber: formData.get('docNumber') || null
+                });
                 if (result.success) { 
                     event.target.reset(); 
                     document.getElementById('productSelect').disabled = true;
@@ -759,11 +939,17 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             const clientId = formData.get('client');
-            const productId = formData.get('product');
             const client = state.clients.find(c => c.id == clientId);
-            const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('addReceipt', { clientId, clientName: client.name, productId, productName: product.name, quantity: formData.get('quantity'), amount: formData.get('amount'), date: formData.get('date') });
+                const result = await apiCall('addReceipt', { 
+                    clientId, 
+                    clientName: client.name, 
+                    paymentType: formData.get('paymentType'),
+                    amount: formData.get('amount'), 
+                    date: formData.get('date'),
+                    docNumber: formData.get('docNumber') || null,
+                    note: formData.get('note') || ''
+                });
                 if (result.success) { event.target.reset(); await loadReceipts(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
             } catch (error) { state.error = error.message; render(); }
         }
@@ -781,7 +967,7 @@
                         </tbody>
                     </table>
                 </div>
-            ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t('noData')}</p></div>`;
+            ` : `<div class="empty-state"><div class="empty-icon">💰</div><p>${t('noData')}</p></div>`;
         }
         
         async function deletePrice(clientId, productId) {
@@ -791,11 +977,12 @@
         
         function render() {
             const app = document.getElementById('app');
-            if (!isConfigured) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>?? URL не настроен!</p></div>`; return; }
+            if (!isConfigured) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>⚠️ URL не настроен!</p></div>`; return; }
             if (state.loading) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>${t('loading')}</p></div>`; return; }
             let content = '';
             switch(state.activeTab) {
                 case 'dashboard': content = renderDashboard(); break;
+                case 'report': content = renderReport(); break;
                 case 'sales': content = renderSalesForm(); break;
                 case 'receipts': content = renderReceiptsForm(); break;
                 case 'clients': content = renderClients(); break;
@@ -825,24 +1012,16 @@
         window.handleReceiptSubmit = handleReceiptSubmit;
         window.loadAndShowClientPrices = loadAndShowClientPrices;
         window.deletePrice = deletePrice;
+        window.generateReport = generateReport;
         
         async function init() {
             state.loading = true; render();
             if (!isConfigured) { state.loading = false; render(); return; }
             if (window.Telegram?.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
-            
-            try {
-                await Promise.all([loadClients(), loadProducts(), loadSales(), loadReceipts()]);
-                console.log('Init complete - Sales:', state.salesData.length, 'Receipts:', state.receiptsData.length);
-            } catch (error) {
-                console.error('Init error:', error);
-                state.error = error.message;
-            }
-            
-            state.loading = false; 
-            render();
+            await Promise.all([loadClients(), loadProducts(), loadSales(), loadReceipts()]);
+            state.loading = false; render();
         }
         init();
     </script>
 </body>
-</html
+</html>
