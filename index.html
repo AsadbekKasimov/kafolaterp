@@ -1,337 +1,921 @@
-        <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Enhanced ERP WebApp</title>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --red:#dc2626;
-  --red-dark:#991b1b;
-  --bg:#f9fafb;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --text:#111827;
-  --muted:#6b7280;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Onest,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-header{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:14px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo{
-  font-size:20px;
-  font-weight:800;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-.logo span{
-  background:linear-gradient(135deg,var(--red),var(--red-dark));
-  color:#fff;
-  padding:6px 10px;
-  border-radius:8px;
-}
-nav{
-  display:flex;
-  gap:10px;
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:10px;
-  overflow-x:auto;
-}
-nav button{
-  border:none;
-  background:none;
-  padding:10px 16px;
-  font-weight:600;
-  cursor:pointer;
-  border-bottom:3px solid transparent;
-}
-nav button.active{
-  border-color:var(--red);
-  color:var(--red);
-}
-main{padding:20px}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:20px;
-}
-.card h2{margin-bottom:14px}
-label{font-size:13px;font-weight:600}
-input,select{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  margin-bottom:14px;
-  border:1px solid var(--border);
-  border-radius:8px;
-}
-button.primary{
-  background:var(--red);
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:8px;
-  font-weight:600;
-  cursor:pointer;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  border-bottom:1px solid var(--border);
-  padding:10px;
-  text-align:left;
-  font-size:14px;
-}
-th{background:#f3f4f6}
-.success{color:green;font-weight:600}
-.error{color:#b91c1c;font-weight:600}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP System - ??????????</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-red: #DC2626; --red-hover: #B91C1C; --red-light: #FEE2E2; --red-dark: #991B1B;
+            --bg-white: #FFFFFF; --bg-gray: #F9FAFB; --text-dark: #111827; --text-gray: #6B7280;
+            --border-gray: #E5E7EB; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1); --green: #059669; --green-light: #D1FAE5;
+        }
+        body { font-family: 'Onest', -apple-system, sans-serif; background: var(--bg-gray); color: var(--text-dark); line-height: 1.6; }
+        .app-container { max-width: 1400px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+        .header { background: var(--bg-white); border-bottom: 1px solid var(--border-gray); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 800; }
+        .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary-red), var(--red-dark)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .lang-switcher { display: flex; gap: 0.25rem; background: var(--bg-gray); padding: 0.25rem; border-radius: 8px; }
+        .lang-btn { padding: 0.375rem 0.75rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-radius: 6px; font-weight: 500; transition: all 0.2s; font-size: 0.875rem; }
+        .lang-btn.active { background: var(--bg-white); color: var(--primary-red); box-shadow: var(--shadow); }
+        .nav-tabs { display: flex; gap: 0.5rem; padding: 1rem 1.5rem 0; background: var(--bg-white); border-bottom: 1px solid var(--border-gray); overflow-x: auto; }
+        .nav-tab { padding: 0.75rem 1.25rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; transition: all 0.2s; white-space: nowrap; font-size: 0.9375rem; }
+        .nav-tab.active { color: var(--primary-red); border-bottom-color: var(--primary-red); }
+        .content { flex: 1; padding: 2rem 1.5rem; }
+        .card { background: var(--bg-white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-gray); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 700; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem; }
+        .form-input, .form-select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-gray); border-radius: 8px; font-size: 1rem; font-family: 'Onest', sans-serif; transition: all 0.2s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-red); box-shadow: 0 0 0 3px var(--red-light); }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; font-family: 'Onest', sans-serif; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--primary-red); color: white; }
+        .btn-primary:hover { background: var(--red-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: var(--bg-gray); color: var(--text-dark); border: 1px solid var(--border-gray); }
+        .btn-secondary:hover { background: var(--border-gray); }
+        .btn-success { background: var(--green); color: white; }
+        .btn-success:hover { background: #047857; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-gray); margin-top: 1rem; }
+        .table { width: 100%; border-collapse: collapse; background: var(--bg-white); }
+        .table th { background: var(--bg-gray); padding: 0.875rem; text-align: left; font-weight: 700; color: var(--text-dark); border-bottom: 2px solid var(--border-gray); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .table td { padding: 0.875rem; border-bottom: 1px solid var(--border-gray); }
+        .table tbody tr:hover { background: var(--bg-gray); }
+        .table-actions { display: flex; gap: 0.5rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-gray); transition: all 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.5rem; background: var(--red-light); color: var(--primary-red); }
+        .stat-label { font-size: 0.875rem; color: var(--text-gray); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { font-size: 2rem; font-weight: 800; }
+        .success-message, .error-message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-weight: 600; animation: slideDown 0.3s ease-out; }
+        .success-message { background: var(--green-light); color: #065F46; }
+        .error-message { background: var(--red-light); color: var(--red-dark); }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; }
+        .spinner { width: 48px; height: 48px; border: 4px solid var(--border-gray); border-top-color: var(--primary-red); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-gray); }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--bg-white); border-radius: 12px; padding: 2rem; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.5rem; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-gray); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+        .modal-close:hover { background: var(--bg-gray); }
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .content { padding: 1.5rem 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .nav-tabs { padding: 1rem 1rem 0; }
+            .table-actions { flex-direction: column; }
+        }
+    </style>
 </head>
-
 <body>
-<header>
-  <div class="logo"><span>ERP</span> Enhanced</div>
-  <div id="tgUser"></div>
-</header>
-
-<nav>
-  <button onclick="setTab('dashboard')" class="active">📊 Dashboard</button>
-  <button onclick="setTab('sales')">💰 Продажи</button>
-  <button onclick="setTab('receipts')">📥 Поступления</button>
-  <button onclick="setTab('clients')">👥 Клиенты</button>
-  <button onclick="setTab('products')">📦 Товары</button>
-  <button onclick="setTab('prices')">💵 Цены</button>
-</nav>
-
-<main id="app"></main>
-
-<script>
-// ================= НАСТРОЙКА =================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi_d-zemTfxqNhYRJSzZnzPZNGx9Ey9BxTpLCPKl0zzllY9NlKmuBhroqmsDutsSxMuQ/exec";
-// ============================================
-
-const tg = window.Telegram?.WebApp;
-const tgUser = tg?.initDataUnsafe?.user;
-if(tg){ tg.ready(); tg.expand(); }
-document.getElementById("tgUser").innerText =
-  tgUser ? `👤 ${tgUser.first_name}` : "Web";
-
-// ========= STATE =========
-let state={
-  tab:"dashboard",
-  clients:[],
-  products:[],
-  clientProducts:[],
-  selectedClient:null
-};
-
-// ========= API =========
-async function api(action, params={}){
-  const url=new URL(SCRIPT_URL);
-  url.searchParams.set("action",action);
-  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
-  const r=await fetch(url);
-  return r.json();
-}
-
-// ========= INIT =========
-async function init(){
-  state.clients=(await api("getClients")).clients||[];
-  state.products=(await api("getProducts")).products||[];
-  render();
-}
-init();
-
-// ========= UI =========
-function setTab(t){
-  state.tab=t;
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
-  render();
-}
-
-function render(){
-  const app=document.getElementById("app");
-  if(state.tab==="dashboard"){
-    app.innerHTML=`
-      <div class="card">
-        <h2>📊 Dashboard</h2>
-        <p>Клиентов: <b>${state.clients.length}</b></p>
-        <p>Товаров: <b>${state.products.length}</b></p>
-      </div>`;
-  }
-
-  if(state.tab==="clients"){
-    app.innerHTML=`
-      <div class="card">
-        <h2>👥 Клиенты</h2>
-        <table>
-          <tr><th>ID</th><th>Имя</th><th>chat_id</th></tr>
-          ${state.clients.map(c=>`
-            <tr>
-              <td>${c.id}</td>
-              <td>${c.name}</td>
-              <td>${c.chat_id}</td>
-            </tr>`).join("")}
-        </table>
-      </div>`;
-  }
-
-  if(state.tab==="products"){
-    app.innerHTML=`
-      <div class="card">
-        <h2>📦 Товары</h2>
-        <table>
-          <tr><th>ID</th><th>Название</th><th>Ед.</th></tr>
-          ${state.products.map(p=>`
-            <tr>
-              <td>${p.id}</td>
-              <td>${p.name}</td>
-              <td>${p.unit}</td>
-            </tr>`).join("")}
-        </table>
-      </div>`;
-  }
-
-  if(state.tab==="prices"){
-    app.innerHTML=`
-      <div class="card">
-        <h2>💵 Цены клиента</h2>
-        <label>Клиент</label>
-        <select onchange="loadClientPrices(this.value)">
-          <option value="">-- выбрать --</option>
-          ${state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`)}
-        </select>
-        <div id="pricesTable"></div>
-      </div>`;
-  }
-
-  if(state.tab==="sales"){
-    app.innerHTML=`
-      <div class="card">
-        <h2>💰 Продажа</h2>
-        <label>Клиент</label>
-        <select onchange="selectClient(this.value)">
-          <option value="">-- выбрать --</option>
-          ${state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`)}
-        </select>
-        <label>Товар</label>
-        <select id="saleProduct"></select>
-        <label>Кол-во</label>
-        <input id="qty" type="number" value="1" oninput="calcSum()"/>
-        <label>Цена</label>
-        <input id="price" readonly/>
-        <label>Сумма</label>
-        <input id="sum" readonly/>
-        <button class="primary" onclick="saveSale()">Сохранить</button>
-      </div>`;
-  }
-
-  if(state.tab==="receipts"){
-    app.innerHTML=`
-      <div class="card">
-        <h2>📥 Поступление</h2>
-        <label>Клиент</label>
-        <select id="rcClient">
-          ${state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`)}
-        </select>
-        <label>Сумма</label>
-        <input id="rcSum" type="number"/>
-        <button class="primary" onclick="saveReceipt()">Сохранить</button>
-      </div>`;
-  }
-}
-
-// ========= LOGIC =========
-async function loadClientPrices(id){
-  state.clientProducts=(await api("getClientProducts",{clientId:id})).products||[];
-  document.getElementById("pricesTable").innerHTML=`
-    <table>
-      <tr><th>Товар</th><th>Цена</th></tr>
-      ${state.clientProducts.map(p=>`
-        <tr><td>${p.product_name}</td><td>${p.price}</td></tr>`).join("")}
-    </table>`;
-}
-
-async function selectClient(id){
-  state.selectedClient=id;
-  const r=await api("getClientProducts",{clientId:id});
-  state.clientProducts=r.products||[];
- document.getElementById("saleProduct").innerHTML =
-  state.clientProducts.map(p =>
-    `<option value="${p.productId}" data-price="${p.price}">
-      ${p.productName}
-    </option>`
-  ).join("");
-}
-
-function calcSum(){
-  const p=document.querySelector("#saleProduct option:checked");
-  if(!p)return;
-  const price=p.dataset.price;
-  const qty=document.getElementById("qty").value;
-  document.getElementById("price").value=price;
-  document.getElementById("sum").value=price*qty;
-}
-
-async function saveSale(){
-  const p = document.querySelector("#saleProduct option:checked");
-  if(!p){
-    alert("Выберите товар");
-    return;
-  }
-
-  await api("addSale",{
-    clientId: Number(state.selectedClient),
-    productId: Number(p.value),
-    quantity: Number(document.getElementById("qty").value)
-  });
-
-  // 🔄 СБРОС ВЫБРАННОГО КЛИЕНТА (ВОТ ЗДЕСЬ)
-  state.selectedClient = null;
-
-  // 🔄 ОЧИСТКА ПОЛЕЙ
-  document.getElementById("qty").value = 1;
-  document.getElementById("price").value = "";
-  document.getElementById("sum").value = "";
-  document.getElementById("saleProduct").innerHTML = "";
-
-  alert("Продажа сохранена");
-}
-
-
-async function saveReceipt(){
-  await api("addReceipt",{
-    clientId: Number(document.getElementById("rcClient").value),
-    amount: Number(document.getElementById("rcSum").value)
-  });
-
-  // 🔄 ОЧИСТКА ФОРМЫ
-  document.getElementById("rcSum").value = "";
-
-  alert("Поступление сохранено");
-}
-
-</script>
+    <div id="app" class="app-container"></div>
+    <div id="modalContainer"></div>
+    
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi_d-zemTfxqNhYRJSzZnzPZNGx9Ey9BxTpLCPKl0zzllY9NlKmuBhroqmsDutsSxMuQ/exec';
+        const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
+        
+        const translations = {
+            ru: {
+                appTitle: 'ERP ???????',
+                dashboard: '??????',
+                sales: '???????',
+                receipts: '???????????',
+                clients: '???????',
+                products: '??????',
+                prices: '????',
+                addSale: '???????? ???????',
+                addReceipt: '???????? ???????????',
+                addClient: '???????? ???????',
+                addProduct: '???????? ?????',
+                setPrice: '?????????? ????',
+                client: '??????',
+                product: '?????',
+                quantity: '??????????',
+                amount: '?????',
+                price: '????',
+                date: '????',
+                save: '?????????',
+                cancel: '????????',
+                edit: '????????',
+                delete: '???????',
+                name: '????????',
+                phone: '???????',
+                address: '?????',
+                notes: '??????????',
+                unit: '???????',
+                category: '?????????',
+                description: '????????',
+                totalSales: '????? ???????',
+                totalReceipts: '????? ???????????',
+                clientsCount: '????????',
+                productsCount: '???????',
+                actions: '????????',
+                loading: '????????...',
+                success: '??????? ?????????!',
+                selectClient: '???????? ???????',
+                selectProduct: '???????? ?????',
+                noData: '??? ??????',
+                confirmDelete: '?? ????????',
+                enterPrice: '??????? ????'
+            },
+            uz: {
+                appTitle: 'ERP Tizimi',
+                dashboard: 'Boshqaruv',
+                sales: 'Sotuvlar',
+                receipts: 'Qabul qilish',
+                clients: 'Mijozlar',
+                products: 'Mahsulotlar',
+                prices: 'Narxlar',
+                addSale: "Sotuv qo'shish",
+                addReceipt: "Qabul qo'shish",
+                addClient: "Mijoz qo'shish",
+                addProduct: "Mahsulot qo'shish",
+                setPrice: "Narx o'rnatish",
+                client: 'Mijoz',
+                product: 'Mahsulot',
+                quantity: 'Miqdor',
+                amount: 'Summa',
+                price: 'Narx',
+                date: 'Sana',
+                save: 'Saqlash',
+                cancel: 'Bekor qilish',
+                edit: "O'zgartirish",
+                delete: "O'chirish",
+                name: 'Nomi',
+                phone: 'Telefon',
+                address: 'Manzil',
+                notes: 'Izohlar',
+                unit: "O'lchov birligi",
+                category: 'Kategoriya',
+                description: 'Tavsif',
+                totalSales: 'Jami sotuvlar',
+                totalReceipts: 'Jami qabul',
+                clientsCount: 'Mijozlar',
+                productsCount: 'Mahsulotlar',
+                actions: 'Harakatlar',
+                loading: 'Yuklanmoqda...',
+                success: 'Muvaffaqiyatli saqlandi!',
+                selectClient: 'Mijozni tanlang',
+                selectProduct: 'Mahsulotni tanlang',
+                noData: "Ma'lumot yo'q",
+                confirmDelete: 'Ishonchingiz komilmi?',
+                enterPrice: 'Narxni kiriting'
+            }
+        };
+        
+        let state = {
+            lang: 'ru',
+            activeTab: 'dashboard',
+            loading: true,
+            showSuccess: false,
+            error: null,
+            clients: [],
+            products: [],
+            clientProducts: {},
+            salesData: [],
+            receiptsData: [],
+            selectedClient: null,
+            selectedProduct: null
+        };
+        
+        async function apiCall(action, params = {}) {
+            if (!isConfigured) throw new Error('SCRIPT_URL ?? ????????');
+            const url = new URL(SCRIPT_URL);
+            url.searchParams.append('action', action);
+            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        }
+        
+        async function loadClients() {
+            const result = await apiCall('getClients');
+            if (result.success) state.clients = result.clients || [];
+        }
+        
+        async function loadProducts() {
+            const result = await apiCall('getProducts');
+            if (result.success) state.products = result.products || [];
+        }
+        
+        async function loadClientProducts(clientId) {
+            const result = await apiCall('getClientProducts', { clientId });
+            if (result.success) {
+                state.clientProducts[clientId] = result.products || [];
+            }
+        }
+        
+        async function loadSales() {
+            const result = await apiCall('getSales', {
+                startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                endDate: new Date().toISOString().split('T')[0]
+            });
+            if (result.success) state.salesData = result.sales || [];
+        }
+        
+        async function loadReceipts() {
+            const result = await apiCall('getReceipts', {
+                startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                endDate: new Date().toISOString().split('T')[0]
+            });
+            if (result.success) state.receiptsData = result.receipts || [];
+        }
+        
+        function renderHeader() {
+            const t = translations[state.lang];
+            return `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo"><div class="logo-icon">E</div><span>${t.appTitle}</span></div>
+                        <div class="lang-switcher">
+                            <button class="lang-btn ${state.lang === 'ru' ? 'active' : ''}" onclick="setLang('ru')">RU</button>
+                            <button class="lang-btn ${state.lang === 'uz' ? 'active' : ''}" onclick="setLang('uz')">UZ</button>
+                        </div>
+                    </div>
+                </header>
+            `;
+        }
+        
+        function renderNav() {
+            const t = translations[state.lang];
+            return `
+                <nav class="nav-tabs">
+                    <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">${t.dashboard}</button>
+                    <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">${t.sales}</button>
+                    <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">${t.receipts}</button>
+                    <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">${t.clients}</button>
+                    <button class="nav-tab ${state.activeTab === 'products' ? 'active' : ''}" onclick="setTab('products')">${t.products}</button>
+                    <button class="nav-tab ${state.activeTab === 'prices' ? 'active' : ''}" onclick="setTab('prices')">${t.prices}</button>
+                </nav>
+            `;
+        }
+        
+        function renderDashboard() {
+            const t = translations[state.lang];
+            const totalSales = state.salesData.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+            const totalReceipts = state.receiptsData.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+            return `
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.totalSales}</div><div class="stat-value">${totalSales.toLocaleString()} ???</div></div>
+                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.totalReceipts}</div><div class="stat-value">${totalReceipts.toLocaleString()} ???</div></div>
+                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.clientsCount}</div><div class="stat-value">${state.clients.length}</div></div>
+                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.productsCount}</div><div class="stat-value">${state.products.length}</div></div>
+                </div>
+            `;
+        }
+        
+        function renderSalesForm() {
+            const t = translations[state.lang];
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t.addSale}</h3>
+                    ${state.showSuccess ? `<div class="success-message">? ${t.success}</div>` : ''}
+                    ${state.error ? `<div class="error-message">? ${state.error}</div>` : ''}
+                    <form onsubmit="handleSaleSubmit(event)">
+                        <div class="form-group">
+                            <label class="form-label">${t.client}</label>
+                            <select class="form-select" name="client" onchange="handleClientChange(this.value)" required>
+                                <option value="">${t.selectClient}</option>
+                                ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.product}</label>
+                            <select class="form-select" name="product" id="productSelect" onchange="handleProductChange(this.value)" required disabled>
+                                <option value="">${t.selectProduct}</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t.quantity}</label>
+                                <input type="number" class="form-input" name="quantity" id="quantityInput" onchange="calculateAmount()" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.price} (???)</label>
+                                <input type="number" class="form-input" name="price" id="priceInput" readonly required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.amount} (???)</label>
+                                <input type="number" class="form-input" name="amount" id="amountInput" readonly required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.date}</label>
+                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">? ${t.save}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">? ${t.cancel}</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+        
+        function renderReceiptsForm() {
+            const t = translations[state.lang];
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t.addReceipt}</h3>
+                    ${state.showSuccess ? `<div class="success-message">? ${t.success}</div>` : ''}
+                    ${state.error ? `<div class="error-message">? ${state.error}</div>` : ''}
+                    <form onsubmit="handleReceiptSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t.client}</label>
+                                <select class="form-select" name="client" required>
+                                    <option value="">${t.selectClient}</option>
+                                    ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.product}</label>
+                                <select class="form-select" name="product" required>
+                                    <option value="">${t.selectProduct}</option>
+                                    ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t.quantity}</label>
+                                <input type="number" class="form-input" name="quantity" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.amount} (???)</label>
+                                <input type="number" class="form-input" name="amount" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t.date}</label>
+                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">? ${t.save}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">? ${t.cancel}</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+        
+        function renderClients() {
+            const t = translations[state.lang];
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${t.clients}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showClientModal()">+ ${t.addClient}</button>
+                    </div>
+                    ${state.clients.length > 0 ? `
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>${t.name}</th>
+                                        <th>${t.phone}</th>
+                                        <th>${t.address}</th>
+                                        <th>${t.actions}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${state.clients.map(c => `
+                                        <tr>
+                                            <td>${c.id}</td>
+                                            <td>${c.name}</td>
+                                            <td>${c.phone || '-'}</td>
+                                            <td>${c.address || '-'}</td>
+                                            <td class="table-actions">
+                                                <button class="btn btn-secondary btn-sm" onclick="editClient(${c.id})">${t.edit}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="deleteClient(${c.id})">${t.delete}</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t.noData}</p></div>`}
+                </div>
+            `;
+        }
+        
+        function renderProducts() {
+            const t = translations[state.lang];
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${t.products}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showProductModal()">+ ${t.addProduct}</button>
+                    </div>
+                    ${state.products.length > 0 ? `
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>${t.name}</th>
+                                        <th>${t.unit}</th>
+                                        <th>${t.category}</th>
+                                        <th>${t.actions}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${state.products.map(p => `
+                                        <tr>
+                                            <td>${p.id}</td>
+                                            <td>${p.name}</td>
+                                            <td>${p.unit}</td>
+                                            <td>${p.category || '-'}</td>
+                                            <td class="table-actions">
+                                                <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">${t.edit}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="deleteProduct(${p.id})">${t.delete}</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t.noData}</p></div>`}
+                </div>
+            `;
+        }
+        
+        function renderPrices() {
+            const t = translations[state.lang];
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${t.prices}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showPriceModal()">+ ${t.setPrice}</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">${t.selectClient}</label>
+                        <select class="form-select" onchange="loadAndShowClientPrices(this.value)">
+                            <option value="">${t.selectClient}</option>
+                            ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="pricesTable"></div>
+                </div>
+            `;
+        }
+        
+        function showClientModal(clientId = null) {
+            const t = translations[state.lang];
+            const client = clientId ? state.clients.find(c => c.id == clientId) : null;
+            const modal = `
+                <div class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${client ? t.edit : t.addClient}</h3>
+                            <button class="modal-close" onclick="closeModal()">Ч</button>
+                        </div>
+                        <form onsubmit="saveClient(event, ${clientId})">
+                            <div class="form-group">
+                                <label class="form-label">${t.name}</label>
+                                <input type="text" class="form-input" name="name" value="${client ? client.name : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.phone}</label>
+                                <input type="text" class="form-input" name="phone" value="${client ? client.phone : ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.address}</label>
+                                <input type="text" class="form-input" name="address" value="${client ? client.address : ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.notes}</label>
+                                <input type="text" class="form-input" name="notes" value="${client ? client.notes : ''}">
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">? ${t.save}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t.cancel}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContainer').innerHTML = modal;
+        }
+        
+        function showProductModal(productId = null) {
+            const t = translations[state.lang];
+            const product = productId ? state.products.find(p => p.id == productId) : null;
+            const modal = `
+                <div class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${product ? t.edit : t.addProduct}</h3>
+                            <button class="modal-close" onclick="closeModal()">Ч</button>
+                        </div>
+                        <form onsubmit="saveProduct(event, ${productId})">
+                            <div class="form-group">
+                                <label class="form-label">${t.name}</label>
+                                <input type="text" class="form-input" name="name" value="${product ? product.name : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.unit}</label>
+                                <input type="text" class="form-input" name="unit" value="${product ? product.unit : '??'}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.category}</label>
+                                <input type="text" class="form-input" name="category" value="${product ? product.category : ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.description}</label>
+                                <input type="text" class="form-input" name="description" value="${product ? product.description : ''}">
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">? ${t.save}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t.cancel}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContainer').innerHTML = modal;
+        }
+        
+        function showPriceModal() {
+            const t = translations[state.lang];
+            const modal = `
+                <div class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${t.setPrice}</h3>
+                            <button class="modal-close" onclick="closeModal()">Ч</button>
+                        </div>
+                        <form onsubmit="savePrice(event)">
+                            <div class="form-group">
+                                <label class="form-label">${t.client}</label>
+                                <select class="form-select" name="client" required>
+                                    <option value="">${t.selectClient}</option>
+                                    ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.product}</label>
+                                <select class="form-select" name="product" required>
+                                    <option value="">${t.selectProduct}</option>
+                                    ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t.price} (???)</label>
+                                <input type="number" class="form-input" name="price" placeholder="${t.enterPrice}" required>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">? ${t.save}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t.cancel}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContainer').innerHTML = modal;
+        }
+        
+        function closeModal() {
+            document.getElementById('modalContainer').innerHTML = '';
+        }
+        
+        async function saveClient(event, clientId) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            try {
+                const result = clientId 
+                    ? await apiCall('updateClient', {
+                        id: clientId,
+                        name: formData.get('name'),
+                        phone: formData.get('phone'),
+                        address: formData.get('address'),
+                        notes: formData.get('notes')
+                    })
+                    : await apiCall('addClient', {
+                        name: formData.get('name'),
+                        chatId: '',
+                        phone: formData.get('phone'),
+                        address: formData.get('address'),
+                        notes: formData.get('notes')
+                    });
+                if (result.success) {
+                    closeModal();
+                    await loadClients();
+                    state.showSuccess = true;
+                    render();
+                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function saveProduct(event, productId) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            try {
+                const result = productId 
+                    ? await apiCall('updateProduct', {
+                        id: productId,
+                        name: formData.get('name'),
+                        unit: formData.get('unit'),
+                        category: formData.get('category'),
+                        description: formData.get('description')
+                    })
+                    : await apiCall('addProduct', {
+                        name: formData.get('name'),
+                        unit: formData.get('unit'),
+                        category: formData.get('category'),
+                        description: formData.get('description')
+                    });
+                if (result.success) {
+                    closeModal();
+                    await loadProducts();
+                    state.showSuccess = true;
+                    render();
+                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function savePrice(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const productId = formData.get('product');
+            const client = state.clients.find(c => c.id == clientId);
+            const product = state.products.find(p => p.id == productId);
+            try {
+                const result = await apiCall('setClientPrice', {
+                    clientId,
+                    clientName: client.name,
+                    productId,
+                    productName: product.name,
+                    price: formData.get('price')
+                });
+                if (result.success) {
+                    closeModal();
+                    state.showSuccess = true;
+                    render();
+                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function editClient(id) {
+            showClientModal(id);
+        }
+        
+        async function deleteClient(id) {
+            const t = translations[state.lang];
+            if (!confirm(t.confirmDelete)) return;
+            try {
+                const result = await apiCall('deleteClient', { id });
+                if (result.success) {
+                    await loadClients();
+                    render();
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function editProduct(id) {
+            showProductModal(id);
+        }
+        
+        async function deleteProduct(id) {
+            const t = translations[state.lang];
+            if (!confirm(t.confirmDelete)) return;
+            try {
+                const result = await apiCall('deleteProduct', { id });
+                if (result.success) {
+                    await loadProducts();
+                    render();
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function handleClientChange(clientId) {
+            if (!clientId) {
+                document.getElementById('productSelect').disabled = true;
+                document.getElementById('productSelect').innerHTML = `<option value="">${translations[state.lang].selectProduct}</option>`;
+                return;
+            }
+            state.selectedClient = clientId;
+            await loadClientProducts(clientId);
+            const products = state.clientProducts[clientId] || [];
+            const select = document.getElementById('productSelect');
+            select.disabled = false;
+            select.innerHTML = `<option value="">${translations[state.lang].selectProduct}</option>` +
+                products.map(p => `<option value="${p.productId}" data-price="${p.price}">${p.productName} - ${parseFloat(p.price).toLocaleString()} ???</option>`).join('');
+        }
+        
+        function handleProductChange(productId) {
+            const select = document.getElementById('productSelect');
+            const option = select.options[select.selectedIndex];
+            const price = option.getAttribute('data-price');
+            document.getElementById('priceInput').value = price;
+            calculateAmount();
+        }
+        
+        function calculateAmount() {
+            const quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
+            const price = parseFloat(document.getElementById('priceInput').value) || 0;
+            document.getElementById('amountInput').value = quantity * price;
+        }
+        
+        async function handleSaleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const productId = formData.get('product');
+            const client = state.clients.find(c => c.id == clientId);
+            const product = state.products.find(p => p.id == productId);
+            try {
+                const result = await apiCall('addSale', {
+                    clientId,
+                    clientName: client.name,
+                    productId,
+                    productName: product.name,
+                    quantity: formData.get('quantity'),
+                    price: formData.get('price'),
+                    date: formData.get('date')
+                });
+                if (result.success) {
+                    event.target.reset();
+                    await loadSales();
+                    state.showSuccess = true;
+                    render();
+                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function handleReceiptSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const productId = formData.get('product');
+            const client = state.clients.find(c => c.id == clientId);
+            const product = state.products.find(p => p.id == productId);
+            try {
+                const result = await apiCall('addReceipt', {
+                    clientId,
+                    clientName: client.name,
+                    productId,
+                    productName: product.name,
+                    quantity: formData.get('quantity'),
+                    amount: formData.get('amount'),
+                    date: formData.get('date')
+                });
+                if (result.success) {
+                    event.target.reset();
+                    await loadReceipts();
+                    state.showSuccess = true;
+                    render();
+                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        async function loadAndShowClientPrices(clientId) {
+            if (!clientId) {
+                document.getElementById('pricesTable').innerHTML = '';
+                return;
+            }
+            await loadClientProducts(clientId);
+            const products = state.clientProducts[clientId] || [];
+            const t = translations[state.lang];
+            document.getElementById('pricesTable').innerHTML = products.length > 0 ? `
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>${t.product}</th>
+                                <th>${t.price}</th>
+                                <th>${t.actions}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${products.map(p => `
+                                <tr>
+                                    <td>${p.productName}</td>
+                                    <td>${parseFloat(p.price).toLocaleString()} ???</td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="deletePrice(${clientId}, ${p.productId})">${t.delete}</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t.noData}</p></div>`;
+        }
+        
+        async function deletePrice(clientId, productId) {
+            const t = translations[state.lang];
+            if (!confirm(t.confirmDelete)) return;
+            try {
+                const result = await apiCall('deleteClientPrice', { clientId, productId });
+                if (result.success) {
+                    await loadAndShowClientPrices(clientId);
+                }
+            } catch (error) {
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        function render() {
+            const t = translations[state.lang];
+            const app = document.getElementById('app');
+            if (!isConfigured) {
+                app.innerHTML = `<div class="loading"><div class="spinner"></div><p>?? SCRIPT_URL ?? ????????! ???????? ???? ? ???????? URL.</p></div>`;
+                return;
+            }
+            if (state.loading) {
+                app.innerHTML = `<div class="loading"><div class="spinner"></div><p>${t.loading}</p></div>`;
+                return;
+            }
+            let content = '';
+            switch(state.activeTab) {
+                case 'dashboard': content = renderDashboard(); break;
+                case 'sales': content = renderSalesForm(); break;
+                case 'receipts': content = renderReceiptsForm(); break;
+                case 'clients': content = renderClients(); break;
+                case 'products': content = renderProducts(); break;
+                case 'prices': content = renderPrices(); break;
+            }
+            app.innerHTML = `${renderHeader()}${renderNav()}<main class="content">${content}</main>`;
+        }
+        
+        window.setLang = function(lang) { state.lang = lang; render(); }
+        window.setTab = function(tab) { state.activeTab = tab; state.error = null; render(); }
+        window.showClientModal = showClientModal;
+        window.showProductModal = showProductModal;
+        window.showPriceModal = showPriceModal;
+        window.closeModal = closeModal;
+        window.saveClient = saveClient;
+        window.saveProduct = saveProduct;
+        window.savePrice = savePrice;
+        window.editClient = editClient;
+        window.deleteClient = deleteClient;
+        window.editProduct = editProduct;
+        window.deleteProduct = deleteProduct;
+        window.handleClientChange = handleClientChange;
+        window.handleProductChange = handleProductChange;
+        window.calculateAmount = calculateAmount;
+        window.handleSaleSubmit = handleSaleSubmit;
+        window.handleReceiptSubmit = handleReceiptSubmit;
+        window.loadAndShowClientPrices = loadAndShowClientPrices;
+        window.deletePrice = deletePrice;
+        
+        async function init() {
+            state.loading = true;
+            render();
+            if (!isConfigured) { state.loading = false; render(); return; }
+            if (window.Telegram?.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
+            await Promise.all([loadClients(), loadProducts(), loadSales(), loadReceipts()]);
+            state.loading = false;
+            render();
+        }
+        
+        init();
+    </script>
 </body>
-</html>
+</html
