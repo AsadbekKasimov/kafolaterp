@@ -14,8 +14,29 @@
             --border-gray: #E5E7EB; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1); --green: #059669; --green-light: #D1FAE5;
         }
-        body { font-family: 'Onest', -apple-system, sans-serif; background: var(--bg-gray); color: var(--text-dark); line-height: 1.6; }
-        .app-container { max-width: 1400px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+        html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;          /* ⛔ body не скроллится */
+  overscroll-behavior: none; /* ⛔ pull-to-close */
+}
+
+body {
+  font-family: 'Onest', -apple-system, sans-serif;
+  background: var(--bg-gray);
+}
+
+      .app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100vh;      /* 🔥 ВАЖНО */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;  /* ⛔ */
+}
+
+
         .header { background: var(--bg-white); border-bottom: 1px solid var(--border-gray); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
         .header-content { display: flex; justify-content: space-between; align-items: center; }
         .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 800; }
@@ -26,7 +47,14 @@
         .nav-tabs { display: flex; gap: 0.5rem; padding: 1rem 1.5rem 0; background: var(--bg-white); border-bottom: 1px solid var(--border-gray); overflow-x: auto; }
         .nav-tab { padding: 0.75rem 1rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; transition: all 0.2s; white-space: nowrap; font-size: 0.875rem; }
         .nav-tab.active { color: var(--primary-red); border-bottom-color: var(--primary-red); }
-        .content { flex: 1; padding: 2rem 1.5rem; }
+       .content {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;              /* ✅ СКРОЛЛ ТОЛЬКО ТУТ */
+  overscroll-behavior: contain;  /* ⛔ не закрывает WebApp */
+  -webkit-overflow-scrolling: touch;
+}
+
         .card { background: var(--bg-white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-gray); margin-bottom: 1.5rem; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .card-title { font-size: 1.25rem; font-weight: 700; }
@@ -733,11 +761,18 @@
         async function init() {
             state.loading = true; render();
             if (!isConfigured) { state.loading = false; render(); return; }
-            if (window.Telegram?.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
+            if (window.Telegram?.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand();tg.enableClosingConfirmation(); }
             await Promise.all([loadClients(), loadProducts(), loadSales(), loadReceipts()]);
             state.loading = false; render();
         }
         init();
+
+            document.addEventListener('touchmove', function (e) {
+  if (!e.target.closest('.content')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+            
     </script>
 </body>
 </html>
