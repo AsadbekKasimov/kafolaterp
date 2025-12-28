@@ -1,10 +1,9 @@
-
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP System - ??????????</title>
+    <title>ERP System</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -25,7 +24,7 @@
         .lang-btn { padding: 0.375rem 0.75rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-radius: 6px; font-weight: 500; transition: all 0.2s; font-size: 0.875rem; }
         .lang-btn.active { background: var(--bg-white); color: var(--primary-red); box-shadow: var(--shadow); }
         .nav-tabs { display: flex; gap: 0.5rem; padding: 1rem 1.5rem 0; background: var(--bg-white); border-bottom: 1px solid var(--border-gray); overflow-x: auto; }
-        .nav-tab { padding: 0.75rem 1.25rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; transition: all 0.2s; white-space: nowrap; font-size: 0.9375rem; }
+        .nav-tab { padding: 0.75rem 1rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; transition: all 0.2s; white-space: nowrap; font-size: 0.875rem; }
         .nav-tab.active { color: var(--primary-red); border-bottom-color: var(--primary-red); }
         .content { flex: 1; padding: 2rem 1.5rem; }
         .card { background: var(--bg-white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-gray); margin-bottom: 1.5rem; }
@@ -92,55 +91,56 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzAivvLeKkdYOf-Xt3cXzC1rDxl42fuAp7hTbEuglHVq02UGNIzS9CIbB3lsndPCleLtQ/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
-        const translations = {
+        const T = {
             ru: {
-                appTitle: 'ERP ???????',
-                dashboard: '??????',
-                sales: '???????',
-                receipts: '???????????',
-                clients: '???????',
-                products: '??????',
-                prices: '????',
-                addSale: '???????? ???????',
-                addReceipt: '???????? ???????????',
-                addClient: '???????? ???????',
-                addProduct: '???????? ?????',
-                setPrice: '?????????? ????',
-                client: '??????',
-                product: '?????',
-                quantity: '??????????',
-                amount: '?????',
-                price: '????',
-                date: '????',
-                save: '?????????',
-                cancel: '????????',
-                edit: '????????',
-                delete: '???????',
-                name: '????????',
-                phone: '???????',
-                address: '?????',
-                notes: '??????????',
-                unit: '???????',
-                category: '?????????',
-                description: '????????',
-                totalSales: '????? ???????',
-                totalReceipts: '????? ???????????',
-                clientsCount: '????????',
-                productsCount: '???????',
-                actions: '????????',
-                loading: '????????...',
-                success: '??????? ?????????!',
-                selectClient: '???????? ???????',
-                selectProduct: '???????? ?????',
-                noData: '??? ??????',
-                confirmDelete: '?? ????????',
-                enterPrice: '??????? ????'
+                appTitle: 'ERP Система',
+                dashboard: 'Панель',
+                sales: 'Продажи',
+                receipts: 'Поступления',
+                clients: 'Клиенты',
+                products: 'Товары',
+                prices: 'Цены',
+                addSale: 'Добавить продажу',
+                addReceipt: 'Добавить поступление',
+                addClient: 'Добавить клиента',
+                addProduct: 'Добавить товар',
+                setPrice: 'Установить цену',
+                client: 'Клиент',
+                product: 'Товар',
+                quantity: 'Количество',
+                amount: 'Сумма',
+                price: 'Цена',
+                date: 'Дата',
+                save: 'Сохранить',
+                cancel: 'Отменить',
+                edit: 'Изменить',
+                delete: 'Удалить',
+                name: 'Название',
+                phone: 'Телефон',
+                address: 'Адрес',
+                notes: 'Примечания',
+                unit: 'Единица',
+                category: 'Категория',
+                description: 'Описание',
+                totalSales: 'Общие продажи',
+                totalReceipts: 'Общие поступления',
+                clientsCount: 'Клиентов',
+                productsCount: 'Товаров',
+                actions: 'Действия',
+                loading: 'Загрузка...',
+                success: 'Успешно сохранено!',
+                selectClient: 'Выберите клиента',
+                selectProduct: 'Выберите товар',
+                noData: 'Нет данных',
+                confirmDelete: 'Вы уверены?',
+                enterPrice: 'Введите цену',
+                sum: 'сум'
             },
             uz: {
                 appTitle: 'ERP Tizimi',
                 dashboard: 'Boshqaruv',
                 sales: 'Sotuvlar',
-                receipts: 'Qabul qilish',
+                receipts: 'Qabul',
                 clients: 'Mijozlar',
                 products: 'Mahsulotlar',
                 prices: 'Narxlar',
@@ -163,7 +163,7 @@
                 phone: 'Telefon',
                 address: 'Manzil',
                 notes: 'Izohlar',
-                unit: "O'lchov birligi",
+                unit: "O'lchov",
                 category: 'Kategoriya',
                 description: 'Tavsif',
                 totalSales: 'Jami sotuvlar',
@@ -172,12 +172,13 @@
                 productsCount: 'Mahsulotlar',
                 actions: 'Harakatlar',
                 loading: 'Yuklanmoqda...',
-                success: 'Muvaffaqiyatli saqlandi!',
+                success: 'Saqlandi!',
                 selectClient: 'Mijozni tanlang',
                 selectProduct: 'Mahsulotni tanlang',
                 noData: "Ma'lumot yo'q",
                 confirmDelete: 'Ishonchingiz komilmi?',
-                enterPrice: 'Narxni kiriting'
+                enterPrice: 'Narxni kiriting',
+                sum: 'sum'
             }
         };
         
@@ -191,18 +192,18 @@
             products: [],
             clientProducts: {},
             salesData: [],
-            receiptsData: [],
-            selectedClient: null,
-            selectedProduct: null
+            receiptsData: []
         };
         
+        function t(key) { return T[state.lang][key] || key; }
+        
         async function apiCall(action, params = {}) {
-            if (!isConfigured) throw new Error('SCRIPT_URL ?? ????????');
+            if (!isConfigured) throw new Error('URL не настроен');
             const url = new URL(SCRIPT_URL);
             url.searchParams.append('action', action);
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
             return await response.json();
         }
         
@@ -218,9 +219,7 @@
         
         async function loadClientProducts(clientId) {
             const result = await apiCall('getClientProducts', { clientId });
-            if (result.success) {
-                state.clientProducts[clientId] = result.products || [];
-            }
+            if (result.success) state.clientProducts[clientId] = result.products || [];
         }
         
         async function loadSales() {
@@ -240,11 +239,10 @@
         }
         
         function renderHeader() {
-            const t = translations[state.lang];
             return `
                 <header class="header">
                     <div class="header-content">
-                        <div class="logo"><div class="logo-icon">E</div><span>${t.appTitle}</span></div>
+                        <div class="logo"><div class="logo-icon">E</div><span>${t('appTitle')}</span></div>
                         <div class="lang-switcher">
                             <button class="lang-btn ${state.lang === 'ru' ? 'active' : ''}" onclick="setLang('ru')">RU</button>
                             <button class="lang-btn ${state.lang === 'uz' ? 'active' : ''}" onclick="setLang('uz')">UZ</button>
@@ -255,75 +253,72 @@
         }
         
         function renderNav() {
-            const t = translations[state.lang];
             return `
                 <nav class="nav-tabs">
-                    <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">${t.dashboard}</button>
-                    <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">${t.sales}</button>
-                    <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">${t.receipts}</button>
-                    <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">${t.clients}</button>
-                    <button class="nav-tab ${state.activeTab === 'products' ? 'active' : ''}" onclick="setTab('products')">${t.products}</button>
-                    <button class="nav-tab ${state.activeTab === 'prices' ? 'active' : ''}" onclick="setTab('prices')">${t.prices}</button>
+                    <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">${t('dashboard')}</button>
+                    <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">${t('sales')}</button>
+                    <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">${t('receipts')}</button>
+                    <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">${t('clients')}</button>
+                    <button class="nav-tab ${state.activeTab === 'products' ? 'active' : ''}" onclick="setTab('products')">${t('products')}</button>
+                    <button class="nav-tab ${state.activeTab === 'prices' ? 'active' : ''}" onclick="setTab('prices')">${t('prices')}</button>
                 </nav>
             `;
         }
         
         function renderDashboard() {
-            const t = translations[state.lang];
             const totalSales = state.salesData.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
             const totalReceipts = state.receiptsData.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
             return `
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.totalSales}</div><div class="stat-value">${totalSales.toLocaleString()} ???</div></div>
-                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.totalReceipts}</div><div class="stat-value">${totalReceipts.toLocaleString()} ???</div></div>
-                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.clientsCount}</div><div class="stat-value">${state.clients.length}</div></div>
-                    <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">${t.productsCount}</div><div class="stat-value">${state.products.length}</div></div>
+                    <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">${t('totalSales')}</div><div class="stat-value">${totalSales.toLocaleString()} ${t('sum')}</div></div>
+                    <div class="stat-card"><div class="stat-icon">📥</div><div class="stat-label">${t('totalReceipts')}</div><div class="stat-value">${totalReceipts.toLocaleString()} ${t('sum')}</div></div>
+                    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">${t('clientsCount')}</div><div class="stat-value">${state.clients.length}</div></div>
+                    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">${t('productsCount')}</div><div class="stat-value">${state.products.length}</div></div>
                 </div>
             `;
         }
         
         function renderSalesForm() {
-            const t = translations[state.lang];
             return `
                 <div class="card">
-                    <h3 class="card-title">${t.addSale}</h3>
-                    ${state.showSuccess ? `<div class="success-message">? ${t.success}</div>` : ''}
-                    ${state.error ? `<div class="error-message">? ${state.error}</div>` : ''}
+                    <h3 class="card-title">${t('addSale')}</h3>
+                    ${state.showSuccess ? `<div class="success-message">✓ ${t('success')}</div>` : ''}
+                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
                     <form onsubmit="handleSaleSubmit(event)">
                         <div class="form-group">
-                            <label class="form-label">${t.client}</label>
+                            <label class="form-label">${t('client')}</label>
                             <select class="form-select" name="client" onchange="handleClientChange(this.value)" required>
-                                <option value="">${t.selectClient}</option>
+                                <option value="">${t('selectClient')}</option>
                                 ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">${t.product}</label>
+                            <label class="form-label">${t('product')}</label>
                             <select class="form-select" name="product" id="productSelect" onchange="handleProductChange(this.value)" required disabled>
-                                <option value="">${t.selectProduct}</option>
+                                <option value="">${t('selectProduct')}</option>
                             </select>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">${t.quantity}</label>
+                                <label class="form-label">${t('quantity')}</label>
                                 <input type="number" class="form-input" name="quantity" id="quantityInput" onchange="calculateAmount()" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.price} (???)</label>
+                                <label class="form-label">${t('price')} (${t('sum')})</label>
                                 <input type="number" class="form-input" name="price" id="priceInput" readonly required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.amount} (???)</label>
+                                <label class="form-label">${t('amount')} (${t('sum')})</label>
                                 <input type="number" class="form-input" name="amount" id="amountInput" readonly required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">${t.date}</label>
+                            <label class="form-label">${t('date')}</label>
                             <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                         </div>
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-primary">? ${t.save}</button>
-                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">? ${t.cancel}</button>
+                            <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t('cancel')}</button>
                         </div>
                     </form>
                 </div>
@@ -331,46 +326,44 @@
         }
         
         function renderReceiptsForm() {
-            const t = translations[state.lang];
             return `
                 <div class="card">
-                    <h3 class="card-title">${t.addReceipt}</h3>
-                    ${state.showSuccess ? `<div class="success-message">? ${t.success}</div>` : ''}
-                    ${state.error ? `<div class="error-message">? ${state.error}</div>` : ''}
+                    <h3 class="card-title">${t('addReceipt')}</h3>
+                    ${state.showSuccess ? `<div class="success-message">✓ ${t('success')}</div>` : ''}
                     <form onsubmit="handleReceiptSubmit(event)">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">${t.client}</label>
+                                <label class="form-label">${t('client')}</label>
                                 <select class="form-select" name="client" required>
-                                    <option value="">${t.selectClient}</option>
+                                    <option value="">${t('selectClient')}</option>
                                     ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.product}</label>
+                                <label class="form-label">${t('product')}</label>
                                 <select class="form-select" name="product" required>
-                                    <option value="">${t.selectProduct}</option>
+                                    <option value="">${t('selectProduct')}</option>
                                     ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">${t.quantity}</label>
+                                <label class="form-label">${t('quantity')}</label>
                                 <input type="number" class="form-input" name="quantity" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.amount} (???)</label>
+                                <label class="form-label">${t('amount')} (${t('sum')})</label>
                                 <input type="number" class="form-input" name="amount" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">${t.date}</label>
+                            <label class="form-label">${t('date')}</label>
                             <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                         </div>
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-primary">? ${t.save}</button>
-                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">? ${t.cancel}</button>
+                            <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t('cancel')}</button>
                         </div>
                     </form>
                 </div>
@@ -378,12 +371,11 @@
         }
         
         function renderClients() {
-            const t = translations[state.lang];
             return `
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">${t.clients}</h3>
-                        <button class="btn btn-success btn-sm" onclick="showClientModal()">+ ${t.addClient}</button>
+                        <h3 class="card-title">${t('clients')}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showClientModal()">+ ${t('addClient')}</button>
                     </div>
                     ${state.clients.length > 0 ? `
                         <div class="table-container">
@@ -391,10 +383,10 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>${t.name}</th>
-                                        <th>${t.phone}</th>
-                                        <th>${t.address}</th>
-                                        <th>${t.actions}</th>
+                                        <th>${t('name')}</th>
+                                        <th>${t('phone')}</th>
+                                        <th>${t('address')}</th>
+                                        <th>${t('actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -405,26 +397,25 @@
                                             <td>${c.phone || '-'}</td>
                                             <td>${c.address || '-'}</td>
                                             <td class="table-actions">
-                                                <button class="btn btn-secondary btn-sm" onclick="editClient(${c.id})">${t.edit}</button>
-                                                <button class="btn btn-secondary btn-sm" onclick="deleteClient(${c.id})">${t.delete}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="editClient(${c.id})">${t('edit')}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="deleteClient(${c.id})">${t('delete')}</button>
                                             </td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
                         </div>
-                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t.noData}</p></div>`}
+                    ` : `<div class="empty-state"><div class="empty-icon">👥</div><p>${t('noData')}</p></div>`}
                 </div>
             `;
         }
         
         function renderProducts() {
-            const t = translations[state.lang];
             return `
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">${t.products}</h3>
-                        <button class="btn btn-success btn-sm" onclick="showProductModal()">+ ${t.addProduct}</button>
+                        <h3 class="card-title">${t('products')}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showProductModal()">+ ${t('addProduct')}</button>
                     </div>
                     ${state.products.length > 0 ? `
                         <div class="table-container">
@@ -432,10 +423,10 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>${t.name}</th>
-                                        <th>${t.unit}</th>
-                                        <th>${t.category}</th>
-                                        <th>${t.actions}</th>
+                                        <th>${t('name')}</th>
+                                        <th>${t('unit')}</th>
+                                        <th>${t('category')}</th>
+                                        <th>${t('actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -446,31 +437,30 @@
                                             <td>${p.unit}</td>
                                             <td>${p.category || '-'}</td>
                                             <td class="table-actions">
-                                                <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">${t.edit}</button>
-                                                <button class="btn btn-secondary btn-sm" onclick="deleteProduct(${p.id})">${t.delete}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">${t('edit')}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="deleteProduct(${p.id})">${t('delete')}</button>
                                             </td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
                         </div>
-                    ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t.noData}</p></div>`}
+                    ` : `<div class="empty-state"><div class="empty-icon">📦</div><p>${t('noData')}</p></div>`}
                 </div>
             `;
         }
         
         function renderPrices() {
-            const t = translations[state.lang];
             return `
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">${t.prices}</h3>
-                        <button class="btn btn-success btn-sm" onclick="showPriceModal()">+ ${t.setPrice}</button>
+                        <h3 class="card-title">${t('prices')}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showPriceModal()">+ ${t('setPrice')}</button>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">${t.selectClient}</label>
+                        <label class="form-label">${t('selectClient')}</label>
                         <select class="form-select" onchange="loadAndShowClientPrices(this.value)">
-                            <option value="">${t.selectClient}</option>
+                            <option value="">${t('selectClient')}</option>
                             ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                         </select>
                     </div>
@@ -480,35 +470,34 @@
         }
         
         function showClientModal(clientId = null) {
-            const t = translations[state.lang];
             const client = clientId ? state.clients.find(c => c.id == clientId) : null;
             const modal = `
                 <div class="modal show">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title">${client ? t.edit : t.addClient}</h3>
-                            <button class="modal-close" onclick="closeModal()">Ч</button>
+                            <h3 class="modal-title">${client ? t('edit') : t('addClient')}</h3>
+                            <button class="modal-close" onclick="closeModal()">×</button>
                         </div>
                         <form onsubmit="saveClient(event, ${clientId})">
                             <div class="form-group">
-                                <label class="form-label">${t.name}</label>
+                                <label class="form-label">${t('name')}</label>
                                 <input type="text" class="form-input" name="name" value="${client ? client.name : ''}" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.phone}</label>
+                                <label class="form-label">${t('phone')}</label>
                                 <input type="text" class="form-input" name="phone" value="${client ? client.phone : ''}">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.address}</label>
+                                <label class="form-label">${t('address')}</label>
                                 <input type="text" class="form-input" name="address" value="${client ? client.address : ''}">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.notes}</label>
+                                <label class="form-label">${t('notes')}</label>
                                 <input type="text" class="form-input" name="notes" value="${client ? client.notes : ''}">
                             </div>
                             <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">? ${t.save}</button>
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t.cancel}</button>
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
                             </div>
                         </form>
                     </div>
@@ -518,35 +507,34 @@
         }
         
         function showProductModal(productId = null) {
-            const t = translations[state.lang];
             const product = productId ? state.products.find(p => p.id == productId) : null;
             const modal = `
                 <div class="modal show">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title">${product ? t.edit : t.addProduct}</h3>
-                            <button class="modal-close" onclick="closeModal()">Ч</button>
+                            <h3 class="modal-title">${product ? t('edit') : t('addProduct')}</h3>
+                            <button class="modal-close" onclick="closeModal()">×</button>
                         </div>
                         <form onsubmit="saveProduct(event, ${productId})">
                             <div class="form-group">
-                                <label class="form-label">${t.name}</label>
+                                <label class="form-label">${t('name')}</label>
                                 <input type="text" class="form-input" name="name" value="${product ? product.name : ''}" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.unit}</label>
-                                <input type="text" class="form-input" name="unit" value="${product ? product.unit : '??'}" required>
+                                <label class="form-label">${t('unit')}</label>
+                                <input type="text" class="form-input" name="unit" value="${product ? product.unit : 'шт'}" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.category}</label>
+                                <label class="form-label">${t('category')}</label>
                                 <input type="text" class="form-input" name="category" value="${product ? product.category : ''}">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.description}</label>
+                                <label class="form-label">${t('description')}</label>
                                 <input type="text" class="form-input" name="description" value="${product ? product.description : ''}">
                             </div>
                             <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">? ${t.save}</button>
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t.cancel}</button>
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
                             </div>
                         </form>
                     </div>
@@ -556,36 +544,35 @@
         }
         
         function showPriceModal() {
-            const t = translations[state.lang];
             const modal = `
                 <div class="modal show">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title">${t.setPrice}</h3>
-                            <button class="modal-close" onclick="closeModal()">Ч</button>
+                            <h3 class="modal-title">${t('setPrice')}</h3>
+                            <button class="modal-close" onclick="closeModal()">×</button>
                         </div>
                         <form onsubmit="savePrice(event)">
                             <div class="form-group">
-                                <label class="form-label">${t.client}</label>
+                                <label class="form-label">${t('client')}</label>
                                 <select class="form-select" name="client" required>
-                                    <option value="">${t.selectClient}</option>
+                                    <option value="">${t('selectClient')}</option>
                                     ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.product}</label>
+                                <label class="form-label">${t('product')}</label>
                                 <select class="form-select" name="product" required>
-                                    <option value="">${t.selectProduct}</option>
+                                    <option value="">${t('selectProduct')}</option>
                                     ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t.price} (???)</label>
-                                <input type="number" class="form-input" name="price" placeholder="${t.enterPrice}" required>
+                                <label class="form-label">${t('price')} (${t('sum')})</label>
+                                <input type="number" class="form-input" name="price" placeholder="${t('enterPrice')}" required>
                             </div>
                             <div class="btn-group">
-                                <button type="submit" class="btn btn-primary">? ${t.save}</button>
-                                <button type="button" class="btn btn-secondary" onclick="closeModal()">? ${t.cancel}</button>
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
                             </div>
                         </form>
                     </div>
@@ -594,40 +581,17 @@
             document.getElementById('modalContainer').innerHTML = modal;
         }
         
-        function closeModal() {
-            document.getElementById('modalContainer').innerHTML = '';
-        }
+        function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
         
         async function saveClient(event, clientId) {
             event.preventDefault();
             const formData = new FormData(event.target);
             try {
                 const result = clientId 
-                    ? await apiCall('updateClient', {
-                        id: clientId,
-                        name: formData.get('name'),
-                        phone: formData.get('phone'),
-                        address: formData.get('address'),
-                        notes: formData.get('notes')
-                    })
-                    : await apiCall('addClient', {
-                        name: formData.get('name'),
-                        chatId: '',
-                        phone: formData.get('phone'),
-                        address: formData.get('address'),
-                        notes: formData.get('notes')
-                    });
-                if (result.success) {
-                    closeModal();
-                    await loadClients();
-                    state.showSuccess = true;
-                    render();
-                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
+                    ? await apiCall('updateClient', { id: clientId, name: formData.get('name'), phone: formData.get('phone'), address: formData.get('address'), notes: formData.get('notes') })
+                    : await apiCall('addClient', { name: formData.get('name'), chatId: '', phone: formData.get('phone'), address: formData.get('address'), notes: formData.get('notes') });
+                if (result.success) { closeModal(); await loadClients(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
         }
         
         async function saveProduct(event, productId) {
@@ -635,30 +599,10 @@
             const formData = new FormData(event.target);
             try {
                 const result = productId 
-                    ? await apiCall('updateProduct', {
-                        id: productId,
-                        name: formData.get('name'),
-                        unit: formData.get('unit'),
-                        category: formData.get('category'),
-                        description: formData.get('description')
-                    })
-                    : await apiCall('addProduct', {
-                        name: formData.get('name'),
-                        unit: formData.get('unit'),
-                        category: formData.get('category'),
-                        description: formData.get('description')
-                    });
-                if (result.success) {
-                    closeModal();
-                    await loadProducts();
-                    state.showSuccess = true;
-                    render();
-                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
+                    ? await apiCall('updateProduct', { id: productId, name: formData.get('name'), unit: formData.get('unit'), category: formData.get('category'), description: formData.get('description') })
+                    : await apiCall('addProduct', { name: formData.get('name'), unit: formData.get('unit'), category: formData.get('category'), description: formData.get('description') });
+                if (result.success) { closeModal(); await loadProducts(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
         }
         
         async function savePrice(event) {
@@ -669,76 +613,23 @@
             const client = state.clients.find(c => c.id == clientId);
             const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('setClientPrice', {
-                    clientId,
-                    clientName: client.name,
-                    productId,
-                    productName: product.name,
-                    price: formData.get('price')
-                });
-                if (result.success) {
-                    closeModal();
-                    state.showSuccess = true;
-                    render();
-                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
+                const result = await apiCall('setClientPrice', { clientId, clientName: client.name, productId, productName: product.name, price: formData.get('price') });
+                if (result.success) { closeModal(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
         }
         
-        async function editClient(id) {
-            showClientModal(id);
-        }
-        
-        async function deleteClient(id) {
-            const t = translations[state.lang];
-            if (!confirm(t.confirmDelete)) return;
-            try {
-                const result = await apiCall('deleteClient', { id });
-                if (result.success) {
-                    await loadClients();
-                    render();
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
-        }
-        
-        async function editProduct(id) {
-            showProductModal(id);
-        }
-        
-        async function deleteProduct(id) {
-            const t = translations[state.lang];
-            if (!confirm(t.confirmDelete)) return;
-            try {
-                const result = await apiCall('deleteProduct', { id });
-                if (result.success) {
-                    await loadProducts();
-                    render();
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
-        }
+        async function editClient(id) { showClientModal(id); }
+        async function deleteClient(id) { if (!confirm(t('confirmDelete'))) return; try { const result = await apiCall('deleteClient', { id }); if (result.success) { await loadClients(); render(); } } catch (error) { state.error = error.message; render(); } }
+        async function editProduct(id) { showProductModal(id); }
+        async function deleteProduct(id) { if (!confirm(t('confirmDelete'))) return; try { const result = await apiCall('deleteProduct', { id }); if (result.success) { await loadProducts(); render(); } } catch (error) { state.error = error.message; render(); } }
         
         async function handleClientChange(clientId) {
-            if (!clientId) {
-                document.getElementById('productSelect').disabled = true;
-                document.getElementById('productSelect').innerHTML = `<option value="">${translations[state.lang].selectProduct}</option>`;
-                return;
-            }
-            state.selectedClient = clientId;
+            if (!clientId) { document.getElementById('productSelect').disabled = true; document.getElementById('productSelect').innerHTML = `<option value="">${t('selectProduct')}</option>`; return; }
             await loadClientProducts(clientId);
             const products = state.clientProducts[clientId] || [];
             const select = document.getElementById('productSelect');
             select.disabled = false;
-            select.innerHTML = `<option value="">${translations[state.lang].selectProduct}</option>` +
-                products.map(p => `<option value="${p.productId}" data-price="${p.price}">${p.productName} - ${parseFloat(p.price).toLocaleString()} ???</option>`).join('');
+            select.innerHTML = `<option value="">${t('selectProduct')}</option>` + products.map(p => `<option value="${p.productId}" data-price="${p.price}">${p.productName} - ${parseFloat(p.price).toLocaleString()} ${t('sum')}</option>`).join('');
         }
         
         function handleProductChange(productId) {
@@ -763,26 +654,9 @@
             const client = state.clients.find(c => c.id == clientId);
             const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('addSale', {
-                    clientId,
-                    clientName: client.name,
-                    productId,
-                    productName: product.name,
-                    quantity: formData.get('quantity'),
-                    price: formData.get('price'),
-                    date: formData.get('date')
-                });
-                if (result.success) {
-                    event.target.reset();
-                    await loadSales();
-                    state.showSuccess = true;
-                    render();
-                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
+                const result = await apiCall('addSale', { clientId, clientName: client.name, productId, productName: product.name, quantity: formData.get('quantity'), price: formData.get('price'), date: formData.get('date') });
+                if (result.success) { event.target.reset(); await loadSales(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
         }
         
         async function handleReceiptSubmit(event) {
@@ -793,85 +667,36 @@
             const client = state.clients.find(c => c.id == clientId);
             const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('addReceipt', {
-                    clientId,
-                    clientName: client.name,
-                    productId,
-                    productName: product.name,
-                    quantity: formData.get('quantity'),
-                    amount: formData.get('amount'),
-                    date: formData.get('date')
-                });
-                if (result.success) {
-                    event.target.reset();
-                    await loadReceipts();
-                    state.showSuccess = true;
-                    render();
-                    setTimeout(() => { state.showSuccess = false; render(); }, 3000);
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
+                const result = await apiCall('addReceipt', { clientId, clientName: client.name, productId, productName: product.name, quantity: formData.get('quantity'), amount: formData.get('amount'), date: formData.get('date') });
+                if (result.success) { event.target.reset(); await loadReceipts(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
         }
         
         async function loadAndShowClientPrices(clientId) {
-            if (!clientId) {
-                document.getElementById('pricesTable').innerHTML = '';
-                return;
-            }
+            if (!clientId) { document.getElementById('pricesTable').innerHTML = ''; return; }
             await loadClientProducts(clientId);
             const products = state.clientProducts[clientId] || [];
-            const t = translations[state.lang];
             document.getElementById('pricesTable').innerHTML = products.length > 0 ? `
                 <div class="table-container">
                     <table class="table">
-                        <thead>
-                            <tr>
-                                <th>${t.product}</th>
-                                <th>${t.price}</th>
-                                <th>${t.actions}</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>${t('product')}</th><th>${t('price')}</th><th>${t('actions')}</th></tr></thead>
                         <tbody>
-                            ${products.map(p => `
-                                <tr>
-                                    <td>${p.productName}</td>
-                                    <td>${parseFloat(p.price).toLocaleString()} ???</td>
-                                    <td><button class="btn btn-secondary btn-sm" onclick="deletePrice(${clientId}, ${p.productId})">${t.delete}</button></td>
-                                </tr>
-                            `).join('')}
+                            ${products.map(p => `<tr><td>${p.productName}</td><td>${parseFloat(p.price).toLocaleString()} ${t('sum')}</td><td><button class="btn btn-secondary btn-sm" onclick="deletePrice(${clientId}, ${p.productId})">${t('delete')}</button></td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
-            ` : `<div class="empty-state"><div class="empty-icon">??</div><p>${t.noData}</p></div>`;
+            ` : `<div class="empty-state"><div class="empty-icon">💰</div><p>${t('noData')}</p></div>`;
         }
         
         async function deletePrice(clientId, productId) {
-            const t = translations[state.lang];
-            if (!confirm(t.confirmDelete)) return;
-            try {
-                const result = await apiCall('deleteClientPrice', { clientId, productId });
-                if (result.success) {
-                    await loadAndShowClientPrices(clientId);
-                }
-            } catch (error) {
-                state.error = error.message;
-                render();
-            }
+            if (!confirm(t('confirmDelete'))) return;
+            try { const result = await apiCall('deleteClientPrice', { clientId, productId }); if (result.success) await loadAndShowClientPrices(clientId); } catch (error) { state.error = error.message; render(); }
         }
         
         function render() {
-            const t = translations[state.lang];
             const app = document.getElementById('app');
-            if (!isConfigured) {
-                app.innerHTML = `<div class="loading"><div class="spinner"></div><p>?? SCRIPT_URL ?? ????????! ???????? ???? ? ???????? URL.</p></div>`;
-                return;
-            }
-            if (state.loading) {
-                app.innerHTML = `<div class="loading"><div class="spinner"></div><p>${t.loading}</p></div>`;
-                return;
-            }
+            if (!isConfigured) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>⚠️ URL не настроен!</p></div>`; return; }
+            if (state.loading) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>${t('loading')}</p></div>`; return; }
             let content = '';
             switch(state.activeTab) {
                 case 'dashboard': content = renderDashboard(); break;
@@ -906,16 +731,13 @@
         window.deletePrice = deletePrice;
         
         async function init() {
-            state.loading = true;
-            render();
+            state.loading = true; render();
             if (!isConfigured) { state.loading = false; render(); return; }
             if (window.Telegram?.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
             await Promise.all([loadClients(), loadProducts(), loadSales(), loadReceipts()]);
-            state.loading = false;
-            render();
+            state.loading = false; render();
         }
-        
         init();
     </script>
 </body>
-</html
+</html>
