@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP System</title>
+    <title>ERP System v2</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -80,6 +80,10 @@
         .report-value { font-weight: 600; color: var(--text-dark); }
         .report-value.positive { color: var(--green); }
         .report-value.negative { color: var(--primary-red); }
+        .reconciliation-table td { text-align: right; }
+        .reconciliation-table td:first-child { text-align: left; }
+        .reconciliation-table td:nth-child(2) { text-align: center; }
+        .balance-row { font-weight: 700; background: #FFF9E6 !important; }
         @media (max-width: 768px) {
             .header { padding: 1rem; }
             .content { padding: 1.5rem 1rem; }
@@ -99,21 +103,21 @@
     <div id="modalContainer"></div>
     
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxb4uqkIgcR8EnAZblXuVGL_IvBmfVKzXtEq1jC6sRZ0bGSzmOs4A69bm5d46NRqn4mYg/exec';
+        const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLg9vXjUY066mcJMDk2wd15M5GL4B04PRJ5r7uStlGQYwZmMToKniW_IewzIa7SOYVgyZVUEFnYIn2WROmOxnhfC6jwSaO95to3QqWALtvWlSns_T3QfOet7jiobDZsWSVf30HAfL-3NWs0-fb8UVmVfcOlt07c5aqpdQnGDbmS_WUIZ2qLvQq8p6mKWGZtyqTppkcQf8OiSI4UbP9Ddt9PeSrC13WyYet2L1mGgdt6K6Mav2y9AT33Ojh5B8Ua8naQ7Fsbmx8-K7nXLGVai25obZaAU63b4tVvLqNl9&lib=M11LzMpkHeXuYHvgSm9GWqnFcymc-iUK7';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
             ru: {
                 appTitle: 'ERP Система',
                 dashboard: 'Панель',
-                sales: 'Продажи',
-                receipts: 'Поступления',
+                sales: 'Отгрузки',
+                receipts: 'Оплаты',
                 clients: 'Клиенты',
                 products: 'Товары',
                 prices: 'Цены',
                 report: 'Акт сверки',
-                addSale: 'Добавить продажу',
-                addReceipt: 'Добавить поступление',
+                addSale: 'Добавить отгрузку',
+                addReceipt: 'Добавить оплату',
                 addClient: 'Добавить клиента',
                 addProduct: 'Добавить товар',
                 setPrice: 'Установить цену',
@@ -134,8 +138,8 @@
                 unit: 'Единица',
                 category: 'Категория',
                 description: 'Описание',
-                totalSales: 'Общие продажи',
-                totalReceipts: 'Общие поступления',
+                totalSales: 'Общие отгрузки',
+                totalReceipts: 'Общие оплаты',
                 clientsCount: 'Клиентов',
                 productsCount: 'Товаров',
                 actions: 'Действия',
@@ -152,24 +156,33 @@
                 generate: 'Сформировать',
                 reconciliationAct: 'Акт сверки взаиморасчетов',
                 period: 'Период',
-                salesByClient: 'Продажи клиенту',
-                receiptsFromClient: 'Поступления от клиента',
+                type: 'Тип',
+                shipped: 'Передано',
+                received: 'Принято',
                 balance: 'Сальдо',
                 debt: 'Задолженность клиента',
                 overpayment: 'Переплата клиента',
-                print: 'Печать'
+                print: 'Печать',
+                paymentType: 'Тип оплаты',
+                cash: 'Наличные',
+                card: 'Карта',
+                transfer: 'Перечисление',
+                bankTransfer: 'Безнал',
+                docNumber: 'Номер документа',
+                note: 'Примечание',
+                initialBalance: '***Начальный баланс***'
             },
             uz: {
                 appTitle: 'ERP Tizimi',
                 dashboard: 'Boshqaruv',
-                sales: 'Sotuvlar',
-                receipts: 'Qabul',
+                sales: 'Yetkazish',
+                receipts: "To'lovlar",
                 clients: 'Mijozlar',
                 products: 'Mahsulotlar',
                 prices: 'Narxlar',
-                report: 'Svеrka akti',
-                addSale: "Sotuv qo'shish",
-                addReceipt: "Qabul qo'shish",
+                report: 'Sverka akti',
+                addSale: "Yetkazish qo'shish",
+                addReceipt: "To'lov qo'shish",
                 addClient: "Mijoz qo'shish",
                 addProduct: "Mahsulot qo'shish",
                 setPrice: "Narx o'rnatish",
@@ -190,8 +203,8 @@
                 unit: "O'lchov",
                 category: 'Kategoriya',
                 description: 'Tavsif',
-                totalSales: 'Jami sotuvlar',
-                totalReceipts: 'Jami qabul',
+                totalSales: 'Jami yetkazish',
+                totalReceipts: "Jami to'lovlar",
                 clientsCount: 'Mijozlar',
                 productsCount: 'Mahsulotlar',
                 actions: 'Harakatlar',
@@ -203,17 +216,26 @@
                 confirmDelete: 'Ishonchingiz komilmi?',
                 enterPrice: 'Narxni kiriting',
                 sum: 'sum',
-                startDate: 'Boshlanish sanasi',
-                endDate: 'Tugash sanasi',
+                startDate: 'Boshlanish',
+                endDate: 'Tugash',
                 generate: 'Yaratish',
-                reconciliationAct: "O'zaro hisob-kitob akti",
+                reconciliationAct: 'Sverka akti',
                 period: 'Davr',
-                salesByClient: 'Mijozga sotuvlar',
-                receiptsFromClient: 'Mijozdan tushumlar',
+                type: 'Turi',
+                shipped: 'Yetkazildi',
+                received: 'Qabul qilindi',
                 balance: 'Balans',
-                debt: 'Mijoz qarzi',
-                overpayment: "Mijoz ortiqcha to'lovi",
-                print: 'Chop etish'
+                debt: 'Qarz',
+                overpayment: "Ortiqcha to'lov",
+                print: 'Chop etish',
+                paymentType: "To'lov turi",
+                cash: 'Naqd',
+                card: 'Karta',
+                transfer: "O'tkazma",
+                bankTransfer: 'Bank',
+                docNumber: 'Hujjat raqami',
+                note: 'Izoh',
+                initialBalance: '***Boshlang\'ich balans***'
             }
         };
         
@@ -227,8 +249,7 @@
             products: [],
             clientProducts: {},
             salesData: [],
-            receiptsData: [],
-            reportData: null
+            receiptsData: []
         };
         
         function t(key) { return T[state.lang][key] || key; }
@@ -387,6 +408,33 @@
             const totalReceipts = receipts.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
             const balance = totalSales - totalReceipts;
             
+            // Объединяем и сортируем все операции по дате
+            const allOperations = [
+                ...sales.map(s => ({
+                    date: new Date(s.date),
+                    type: s.docNumber || `${t('sales')} #${s.id}`,
+                    shipped: s.amount,
+                    received: 0,
+                    isBalance: false
+                })),
+                ...receipts.map(r => ({
+                    date: new Date(r.date),
+                    type: r.docNumber || `${t('receipts')} #${r.id}`,
+                    shipped: 0,
+                    received: r.amount,
+                    isBalance: false
+                }))
+            ].sort((a, b) => a.date - b.date);
+            
+            // Добавляем начальный баланс в начало
+            allOperations.unshift({
+                date: new Date(startDate),
+                type: t('initialBalance'),
+                shipped: 0,
+                received: 0,
+                isBalance: true
+            });
+            
             return `
                 <div style="margin-top: 2rem;">
                     <div class="report-summary">
@@ -399,14 +447,6 @@
                             <span class="report-label">${t('period')}:</span>
                             <span class="report-value">${new Date(startDate).toLocaleDateString('ru-RU')} - ${new Date(endDate).toLocaleDateString('ru-RU')}</span>
                         </div>
-                        <div class="report-row">
-                            <span class="report-label">${t('salesByClient')}:</span>
-                            <span class="report-value">${totalSales.toLocaleString('ru-RU')} ${t('sum')}</span>
-                        </div>
-                        <div class="report-row">
-                            <span class="report-label">${t('receiptsFromClient')}:</span>
-                            <span class="report-value">${totalReceipts.toLocaleString('ru-RU')} ${t('sum')}</span>
-                        </div>
                         <div class="report-row total">
                             <span class="report-label">${t('balance')}:</span>
                             <span class="report-value ${balance > 0 ? 'negative' : balance < 0 ? 'positive' : ''}">
@@ -416,67 +456,38 @@
                         </div>
                     </div>
                     
-                    ${sales.length > 0 ? `
-                        <h4 style="margin: 1.5rem 0 1rem; font-size: 1.125rem;">${t('sales')}</h4>
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>${t('date')}</th>
-                                        <th>${t('product')}</th>
-                                        <th>${t('quantity')}</th>
-                                        <th>${t('price')}</th>
-                                        <th>${t('amount')}</th>
+                    <h4 style="margin: 1.5rem 0 1rem; font-size: 1.125rem;">${t('reconciliationAct')}</h4>
+                    <div class="table-container">
+                        <table class="table reconciliation-table">
+                            <thead>
+                                <tr>
+                                    <th>${t('type')}</th>
+                                    <th>${t('date')}</th>
+                                    <th>${t('shipped')}</th>
+                                    <th>${t('received')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${allOperations.map(op => `
+                                    <tr class="${op.isBalance ? 'balance-row' : ''}">
+                                        <td>${op.type}</td>
+                                        <td style="text-align: center;">${op.date.toLocaleDateString('ru-RU')}</td>
+                                        <td>${op.shipped > 0 ? parseFloat(op.shipped).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
+                                        <td>${op.received > 0 ? parseFloat(op.received).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    ${sales.map(s => `
-                                        <tr>
-                                            <td>${new Date(s.date).toLocaleDateString('ru-RU')}</td>
-                                            <td>${s.product}</td>
-                                            <td>${s.quantity}</td>
-                                            <td>${parseFloat(s.price || 0).toLocaleString('ru-RU')} ${t('sum')}</td>
-                                            <td>${parseFloat(s.amount || 0).toLocaleString('ru-RU')} ${t('sum')}</td>
-                                        </tr>
-                                    `).join('')}
-                                    <tr style="font-weight: 700; background: var(--bg-gray);">
-                                        <td colspan="4">${t('totalSales')}</td>
-                                        <td>${totalSales.toLocaleString('ru-RU')} ${t('sum')}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    ` : ''}
-                    
-                    ${receipts.length > 0 ? `
-                        <h4 style="margin: 1.5rem 0 1rem; font-size: 1.125rem;">${t('receipts')}</h4>
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>${t('date')}</th>
-                                        <th>${t('product')}</th>
-                                        <th>${t('quantity')}</th>
-                                        <th>${t('amount')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${receipts.map(r => `
-                                        <tr>
-                                            <td>${new Date(r.date).toLocaleDateString('ru-RU')}</td>
-                                            <td>${r.product}</td>
-                                            <td>${r.quantity}</td>
-                                            <td>${parseFloat(r.amount || 0).toLocaleString('ru-RU')} ${t('sum')}</td>
-                                        </tr>
-                                    `).join('')}
-                                    <tr style="font-weight: 700; background: var(--bg-gray);">
-                                        <td colspan="3">${t('totalReceipts')}</td>
-                                        <td>${totalReceipts.toLocaleString('ru-RU')} ${t('sum')}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    ` : ''}
+                                `).join('')}
+                                <tr style="font-weight: 700; background: var(--bg-gray);">
+                                    <td colspan="2">${t('totalSales')} / ${t('totalReceipts')}</td>
+                                    <td>${totalSales.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td>${totalReceipts.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                </tr>
+                                <tr class="balance-row">
+                                    <td colspan="2">${t('balance')}</td>
+                                    <td colspan="2">${Math.abs(balance).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${balance > 0 ? t('debt') : balance < 0 ? t('overpayment') : ''}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     
                     <div class="btn-group" style="margin-top: 1.5rem;">
                         <button class="btn btn-secondary" onclick="window.print()">🖨️ ${t('print')}</button>
@@ -534,6 +545,16 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
+                                <label class="form-label">${t('docNumber')}</label>
+                                <input type="text" class="form-input" name="docNumber" placeholder="Отгрузка #...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('date')}</label>
+                                <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label class="form-label">${t('quantity')}</label>
                                 <input type="number" class="form-input" name="quantity" id="quantityInput" onchange="calculateAmount()" required>
                             </div>
@@ -545,10 +566,6 @@
                                 <label class="form-label">${t('amount')} (${t('sum')})</label>
                                 <input type="number" class="form-input" name="amount" id="amountInput" readonly required>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">${t('date')}</label>
-                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                         </div>
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
@@ -574,26 +591,32 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t('product')}</label>
-                                <select class="form-select" name="product" required>
-                                    <option value="">${t('selectProduct')}</option>
-                                    ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                <label class="form-label">${t('paymentType')}</label>
+                                <select class="form-select" name="paymentType" required>
+                                    <option value="Наличные">${t('cash')}</option>
+                                    <option value="Карта">${t('card')}</option>
+                                    <option value="Перечисление">${t('transfer')}</option>
+                                    <option value="Безнал">${t('bankTransfer')}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">${t('quantity')}</label>
-                                <input type="number" class="form-input" name="quantity" required>
+                                <label class="form-label">${t('docNumber')}</label>
+                                <input type="text" class="form-input" name="docNumber" placeholder="Оплата клиента #...">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">${t('amount')} (${t('sum')})</label>
-                                <input type="number" class="form-input" name="amount" required>
+                                <label class="form-label">${t('date')}</label>
+                                <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">${t('date')}</label>
-                            <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                            <label class="form-label">${t('amount')} (${t('sum')})</label>
+                            <input type="number" class="form-input" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t('note')}</label>
+                            <input type="text" class="form-input" name="note" placeholder="${t('note')}">
                         </div>
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
@@ -888,7 +911,16 @@
             const client = state.clients.find(c => c.id == clientId);
             const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('addSale', { clientId, clientName: client.name, productId, productName: product.name, quantity: formData.get('quantity'), price: formData.get('price'), date: formData.get('date') });
+                const result = await apiCall('addSale', { 
+                    clientId, 
+                    clientName: client.name, 
+                    productId, 
+                    productName: product.name, 
+                    quantity: formData.get('quantity'), 
+                    price: formData.get('price'), 
+                    date: formData.get('date'),
+                    docNumber: formData.get('docNumber') || null
+                });
                 if (result.success) { 
                     event.target.reset(); 
                     document.getElementById('productSelect').disabled = true;
@@ -907,11 +939,17 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             const clientId = formData.get('client');
-            const productId = formData.get('product');
             const client = state.clients.find(c => c.id == clientId);
-            const product = state.products.find(p => p.id == productId);
             try {
-                const result = await apiCall('addReceipt', { clientId, clientName: client.name, productId, productName: product.name, quantity: formData.get('quantity'), amount: formData.get('amount'), date: formData.get('date') });
+                const result = await apiCall('addReceipt', { 
+                    clientId, 
+                    clientName: client.name, 
+                    paymentType: formData.get('paymentType'),
+                    amount: formData.get('amount'), 
+                    date: formData.get('date'),
+                    docNumber: formData.get('docNumber') || null,
+                    note: formData.get('note') || ''
+                });
                 if (result.success) { event.target.reset(); await loadReceipts(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
             } catch (error) { state.error = error.message; render(); }
         }
