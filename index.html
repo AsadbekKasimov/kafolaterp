@@ -84,6 +84,7 @@
         .reconciliation-table td:first-child { text-align: left; }
         .reconciliation-table td:nth-child(2) { text-align: center; }
         .balance-row { font-weight: 700; background: #FFF9E6 !important; }
+        .debug-info { background: #FFF3CD; border: 1px solid #FFECB5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem; }
         @media (max-width: 768px) {
             .header { padding: 1rem; }
             .content { padding: 1.5rem 1rem; }
@@ -93,7 +94,7 @@
             .table-actions { flex-direction: column; }
         }
         @media print {
-            .header, .nav-tabs, .btn { display: none; }
+            .header, .nav-tabs, .btn, .debug-info { display: none; }
             .content { padding: 0; }
         }
     </style>
@@ -170,7 +171,8 @@
                 bankTransfer: 'Безнал',
                 docNumber: 'Номер документа',
                 note: 'Примечание',
-                initialBalance: '***Начальный баланс***'
+                initialBalance: '***Начальный баланс***',
+                totalShipped: 'Общие отгрузки / Общие оплаты'
             },
             uz: {
                 appTitle: 'ERP Tizimi',
@@ -235,7 +237,8 @@
                 bankTransfer: 'Bank',
                 docNumber: 'Hujjat raqami',
                 note: 'Izoh',
-                initialBalance: '***Boshlang\'ich balans***'
+                initialBalance: '***Boshlang\'ich balans***',
+                totalShipped: "Jami yetkazish / Jami to'lovlar"
             }
         };
         
@@ -263,9 +266,16 @@
                     url.searchParams.append(key, params[key]);
                 }
             });
+            
+            console.log('📡 API Call:', action, params);
+            
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
-            return await response.json();
+            const result = await response.json();
+            
+            console.log('📥 API Response:', action, result);
+            
+            return result;
         }
         
         async function loadClients() {
@@ -404,22 +414,30 @@
         }
         
         function renderReportResult(clientName, startDate, endDate, sales, receipts) {
+            console.log('🔍 Rendering report:', { clientName, startDate, endDate, salesCount: sales.length, receiptsCount: receipts.length });
+            console.log('📊 Sales data:', sales);
+            console.log('💰 Receipts data:', receipts);
+            
             const totalSales = sales.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
             const totalReceipts = receipts.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
             const balance = totalSales - totalReceipts;
+            
+            console.log('💵 Totals:', { totalSales, totalReceipts, balance });
             
             // Объединяем и сортируем все операции по дате
             const allOperations = [
                 ...sales.map(s => ({
                     date: new Date(s.date),
-                    type: s.docNumber || `${t('sales')} #${s.id}`,
+                    type: s.docNumber || `Отгрузка #${s.id}`,
+                    details: `${s.product} (${s.quantity} ${s.price ? '× ' + parseFloat(s.price).toLocaleString('ru-RU', {minimumFractionDigits: 2}) : ''})`,
                     shipped: s.amount,
                     received: 0,
                     isBalance: false
                 })),
                 ...receipts.map(r => ({
                     date: new Date(r.date),
-                    type: r.docNumber || `${t('receipts')} #${r.id}`,
+                    type: r.docNumber || `Оплата #${r.id}`,
+                    details: r.paymentType || '',
                     shipped: 0,
                     received: r.amount,
                     isBalance: false
@@ -430,13 +448,25 @@
             allOperations.unshift({
                 date: new Date(startDate),
                 type: t('initialBalance'),
+                details: '',
                 shipped: 0,
                 received: 0,
                 isBalance: true
             });
             
+            console.log('📋 All operations:', allOperations);
+            
             return `
                 <div style="margin-top: 2rem;">
+                    <div class="debug-info">
+                        <strong>🔍 Отладочная информация:</strong><br>
+                        Найдено отгрузок: ${sales.length}<br>
+                        Найдено оплат: ${receipts.length}<br>
+                        Сумма отгрузок: ${totalSales.toLocaleString('ru-RU', {minimumFractionDigits: 2})} сум<br>
+                        Сумма оплат: ${totalReceipts.toLocaleString('ru-RU', {minimumFractionDigits: 2})} сум<br>
+                        Сальдо: ${balance.toLocaleString('ru-RU', {minimumFractionDigits: 2})} сум
+                    </div>
+                    
                     <div class="report-summary">
                         <h4 style="margin-bottom: 1rem; font-size: 1.125rem;">${t('reconciliationAct')}</h4>
                         <div class="report-row">
@@ -450,7 +480,7 @@
                         <div class="report-row total">
                             <span class="report-label">${t('balance')}:</span>
                             <span class="report-value ${balance > 0 ? 'negative' : balance < 0 ? 'positive' : ''}">
-                                ${Math.abs(balance).toLocaleString('ru-RU')} ${t('sum')} 
+                                ${Math.abs(balance).toLocaleString('ru-RU', {minimumFractionDigits: 2})} ${t('sum')} 
                                 ${balance > 0 ? '(' + t('debt') + ')' : balance < 0 ? '(' + t('overpayment') + ')' : ''}
                             </span>
                         </div>
@@ -470,14 +500,17 @@
                             <tbody>
                                 ${allOperations.map(op => `
                                     <tr class="${op.isBalance ? 'balance-row' : ''}">
-                                        <td>${op.type}</td>
+                                        <td>
+                                            ${op.type}
+                                            ${op.details ? `<br><small style="color: var(--text-gray);">${op.details}</small>` : ''}
+                                        </td>
                                         <td style="text-align: center;">${op.date.toLocaleDateString('ru-RU')}</td>
                                         <td>${op.shipped > 0 ? parseFloat(op.shipped).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
                                         <td>${op.received > 0 ? parseFloat(op.received).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
                                     </tr>
                                 `).join('')}
                                 <tr style="font-weight: 700; background: var(--bg-gray);">
-                                    <td colspan="2">${t('totalSales')} / ${t('totalReceipts')}</td>
+                                    <td colspan="2">${t('totalShipped')}</td>
                                     <td>${totalSales.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                     <td>${totalReceipts.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                 </tr>
@@ -503,7 +536,14 @@
             const startDate = formData.get('startDate');
             const endDate = formData.get('endDate');
             
+            console.log('📊 Generating report for:', { clientId, startDate, endDate });
+            
             const client = state.clients.find(c => c.id == clientId);
+            
+            if (!client) {
+                console.error('❌ Client not found:', clientId);
+                return;
+            }
             
             try {
                 const [salesResult, receiptsResult] = await Promise.all([
@@ -511,13 +551,19 @@
                     apiCall('getReceipts', { clientId, startDate, endDate })
                 ]);
                 
+                console.log('📥 Sales result:', salesResult);
+                console.log('📥 Receipts result:', receiptsResult);
+                
                 const sales = salesResult.success ? salesResult.sales || [] : [];
                 const receipts = receiptsResult.success ? receiptsResult.receipts || [] : [];
+                
+                console.log('✅ Parsed data:', { sales, receipts });
                 
                 document.getElementById('reportResult').innerHTML = renderReportResult(
                     client.name, startDate, endDate, sales, receipts
                 );
             } catch (error) {
+                console.error('❌ Report generation error:', error);
                 state.error = error.message;
                 render();
             }
