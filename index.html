@@ -108,7 +108,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwL3WzmhPm9PrUvNGrwksNcReMC2yeiBwY9GO-8ZJgjipWJqCe58ACQEpExJtocTQpaXg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -398,61 +398,36 @@
         }
         
         function renderReport() {
-
-  // ===== КЛИЕНТ =====
-  if (USER_ROLE === 'client') {
-    const client = state.clients.find(c => c.id == CLIENT_ID);
-
-    return `
-      <div class="card">
-        <h3 class="card-title">Акт сверки взаиморасчетов</h3>
-
-        <div class="form-group">
-          <label class="form-label">Клиент</label>
-          <input type="text" class="form-input"
-                 value="${client ? client.name : ''}"
-                 disabled>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Дата начала</label>
-            <input type="date" class="form-input" id="startDate">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Дата окончания</label>
-            <input type="date" class="form-input" id="endDate">
-          </div>
-        </div>
-
-        <button class="btn btn-primary" onclick="generateClientReport()">
-          Сформировать
-        </button>
-
-        <div id="reportResult"></div>
-      </div>
-    `;
-  }
-
-  // ===== АДМИН =====
-  return `
-    <div class="card">
-      <h3 class="card-title">Акт сверки взаиморасчетов</h3>
-
-      <div class="form-group">
-        <label class="form-label">Клиент</label>
-        <select class="form-select" name="client" required>
-          <option value="">Выберите клиента</option>
-          ${state.clients.map(c => `
-            <option value="${c.id}">${c.name}</option>
-          `).join('')}
-        </select>
-      </div>
-      ...
-    </div>
-  `;
-}
-
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t('reconciliationAct')}</h3>
+                    <form onsubmit="generateReport(event)">
+                        <div class="form-group">
+                            <label class="form-label">${t('client')}</label>
+                            <select class="form-select" name="client" required>
+                                <option value="">${t('selectClient')}</option>
+                                ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('startDate')}</label>
+                                <input type="date" class="form-input" name="startDate" value="${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('endDate')}</label>
+                                <input type="date" class="form-input" name="endDate" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">📊 ${t('generate')}</button>
+                        </div>
+                    </form>
+                    
+                    <div id="reportResult"></div>
+                </div>
+            `;
+        }
         
         function renderReportResult(clientName, startDate, endDate, sales, receipts) {
             console.log('🔍 Rendering report:', { clientName, startDate, endDate, salesCount: sales.length, receiptsCount: receipts.length });
@@ -609,26 +584,7 @@
                 render();
             }
         }
-
-        async function generateClientReport() {
-  const startDate = document.getElementById('startDate').value;
-  const endDate = document.getElementById('endDate').value;
-
-  const [salesRes, receiptsRes] = await Promise.all([
-    apiCall('getSales', { clientId: CLIENT_ID, startDate, endDate }),
-    apiCall('getReceipts', { clientId: CLIENT_ID, startDate, endDate })
-  ]);
-
-  document.getElementById('reportResult').innerHTML =
-    renderReportResult(
-      state.clients.find(c => c.id == CLIENT_ID)?.name || '',
-      startDate,
-      endDate,
-      salesRes.sales || [],
-      receiptsRes.receipts || []
-    );
-}
-
+        
         function renderSalesForm() {
             return `
                 <div class="card">
@@ -1163,19 +1119,15 @@
     }
 
     // === ЗАГРУЗКА ДАННЫХ ===
-    if (USER_ROLE === 'admin') {
-  await Promise.all([
-    loadClients(),
-    loadProducts(),
-    loadSales(),
-    loadReceipts()
-  ]);
-}
+    await Promise.all([
+        loadClients(),
+        loadProducts(),
+        loadSales(),
+        loadReceipts()
+    ]);
 
-if (USER_ROLE === 'client') {
-  await loadClients(); // только чтобы узнать имя клиента
-}
-
+    state.loading = false;
+    render();
 }
 
         init();
