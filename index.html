@@ -104,6 +104,10 @@
     <div id="modalContainer"></div>
     
     <script>
+
+        let USER_ROLE = null;
+        let CLIENT_ID = null;
+        
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwr6MPB-woX28mBB2zDsU0_cE2MOLPVEhcr1ChkaO5aSCRbArNRgEjY9pqjER1xUSCsgA/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
@@ -338,18 +342,30 @@
         }
         
         function renderNav() {
-            return `
-                <nav class="nav-tabs">
-                    <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">${t('dashboard')}</button>
-                    <button class="nav-tab ${state.activeTab === 'report' ? 'active' : ''}" onclick="setTab('report')">${t('report')}</button>
-                    <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">${t('sales')}</button>
-                    <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">${t('receipts')}</button>
-                    <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">${t('clients')}</button>
-                    <button class="nav-tab ${state.activeTab === 'products' ? 'active' : ''}" onclick="setTab('products')">${t('products')}</button>
-                    <button class="nav-tab ${state.activeTab === 'prices' ? 'active' : ''}" onclick="setTab('prices')">${t('prices')}</button>
-                </nav>
-            `;
-        }
+
+    // ===== КЛИЕНТ =====
+    if (USER_ROLE === 'client') {
+        return `
+            <nav class="nav-tabs">
+                <button class="nav-tab active">📄 Акт сверки</button>
+            </nav>
+        `;
+    }
+
+    // ===== АДМИН (СТАРЫЙ КОД) =====
+    return `
+        <nav class="nav-tabs">
+            <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">Панель</button>
+            <button class="nav-tab ${state.activeTab === 'report' ? 'active' : ''}" onclick="setTab('report')">Акт сверки</button>
+            <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">Продажи</button>
+            <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">Поступления</button>
+            <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">Клиенты</button>
+            <button class="nav-tab ${state.activeTab === 'products' ? 'active' : ''}" onclick="setTab('products')">Товары</button>
+            <button class="nav-tab ${state.activeTab === 'prices' ? 'active' : ''}" onclick="setTab('prices')">Цены</button>
+        </nav>
+    `;
+}
+
         
         function renderDashboard() {
             const totalSales = state.salesData.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
@@ -1061,13 +1077,71 @@
         window.generateReport = generateReport;
         
         async function init() {
-            state.loading = true; render();
-            if (!isConfigured) { state.loading = false; render(); return; }
-            if (window.Telegram?.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
-            await Promise.all([loadClients(), loadProducts(), loadSales(), loadReceipts()]);
-            state.loading = false; render();
-        }
+    state.loading = true;
+    render();
+
+    // === 🔐 АВТОРИЗАЦИЯ ===
+    const tg = window.Telegram?.WebApp;
+    const chatId = tg?.initDataUnsafe?.user?.id;
+
+    if (!chatId) {
+        showNoAccess('Откройте приложение из Telegram');
+        return;
+    }
+
+    const auth = await apiCall('detectUser', { chatId });
+
+    if (!auth.success) {
+        showNoAccess('Ошибка авторизации');
+        return;
+    }
+
+    const user = auth.user;
+
+    if (user.role === 'admin') {
+        USER_ROLE = 'admin';
+        // админ — всё как раньше
+    }
+    else if (user.role === 'client') {
+        USER_ROLE = 'client';
+        CLIENT_ID = user.clientId;
+        state.activeTab = 'report'; // сразу акт сверки
+    }
+    else {
+        showNoAccess('У вас нет доступа. Свяжитесь с администратором.');
+        return;
+    }
+
+    // === TELEGRAM READY ===
+    if (tg) {
+        tg.ready();
+        tg.expand();
+    }
+
+    // === ЗАГРУЗКА ДАННЫХ ===
+    await Promise.all([
+        loadClients(),
+        loadProducts(),
+        loadSales(),
+        loadReceipts()
+    ]);
+
+    state.loading = false;
+    render();
+}
+
         init();
+
+
+        function showNoAccess(text) {
+    document.getElementById('app').innerHTML = `
+      <div class="card" style="max-width:480px;margin:80px auto;text-align:center">
+        <h3>⛔ Доступ запрещён</h3>
+        <p>${text}</p>
+      </div>
+    `;
+  }
+        
     </script>
 </body>
 </html>
