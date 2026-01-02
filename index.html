@@ -110,7 +110,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyY9K1yQQENhRzLfYk7N9c2HlSwLKkoJw-xxayT4a7ETQswNPWn-PQXknYf3putt8hHkQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmp6UbHNkEuFGcsBril8zsnIa2we2p5hO3hENYWldBHxXm4aQucIClOCwAYKCMKmQ_iA/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -1317,11 +1317,12 @@
                 const pdfBase64 = pdf.output('datauristring').split(',')[1];
                 
                 // Отправляем в Telegram через Google Apps Script
-                const response = await fetch(SCRIPT_URL + '?action=sendPDF', {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        chatId: chatId,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'sendPDF',
+                        chatId: chatId.toString(),
                         pdfData: pdfBase64,
                         fileName: fileName
                     })
