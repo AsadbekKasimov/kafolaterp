@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP System v2</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-red: #DC2626; --red-hover: #B91C1C; --red-light: #FEE2E2; --red-dark: #991B1B;
+            --bg-white: #FFFFFF; --bg-gray: #F9FAFB; --text-dark: #111827; --text-gray: #6B7280;
+            --border-gray: #E5E7EB; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1); --green: #059669; --green-light: #D1FAE5;
+        }
+        body { font-family: 'Onest', -apple-system, sans-serif; background: var(--bg-gray); color: var(--text-dark); line-height: 1.6; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .app-container { max-width: 1400px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+        .header { background: var(--bg-white); border-bottom: 1px solid var(--border-gray); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 800; }
+        .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary-red), var(--red-dark)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .lang-switcher { display: flex; gap: 0.25rem; background: var(--bg-gray); padding: 0.25rem; border-radius: 8px; }
+        .lang-btn { padding: 0.375rem 0.75rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-radius: 6px; font-weight: 500; transition: all 0.2s; font-size: 0.875rem; }
+        .lang-btn.active { background: var(--bg-white); color: var(--primary-red); box-shadow: var(--shadow); }
+        .nav-tabs { display: flex; gap: 0.5rem; padding: 1rem 1.5rem 0; background: var(--bg-white); border-bottom: 1px solid var(--border-gray); overflow-x: auto; }
+        .nav-tab { padding: 0.75rem 1rem; border: none; background: transparent; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; transition: all 0.2s; white-space: nowrap; font-size: 0.875rem; }
+        .nav-tab.active { color: var(--primary-red); border-bottom-color: var(--primary-red); }
+        .content { flex: 1; padding: 2rem 1.5rem; }
+        .card { background: var(--bg-white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-gray); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 700; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.875rem; }
+        .form-input, .form-select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-gray); border-radius: 8px; font-size: 1rem; font-family: 'Onest', sans-serif; transition: all 0.2s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-red); box-shadow: 0 0 0 3px var(--red-light); }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; font-family: 'Onest', sans-serif; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--primary-red); color: white; }
+        .btn-primary:hover { background: var(--red-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: var(--bg-gray); color: var(--text-dark); border: 1px solid var(--border-gray); }
+        .btn-secondary:hover { background: var(--border-gray); }
+        .btn-success { background: var(--green); color: white; }
+        .btn-success:hover { background: #047857; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-gray); margin-top: 1rem; }
+        .table { width: 100%; border-collapse: collapse; background: var(--bg-white); }
+        .table th { background: var(--bg-gray); padding: 0.875rem; text-align: left; font-weight: 700; color: var(--text-dark); border-bottom: 2px solid var(--border-gray); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .table td { padding: 0.875rem; border-bottom: 1px solid var(--border-gray); }
+        .table tbody tr:hover { background: var(--bg-gray); }
+        .table-actions { display: flex; gap: 0.5rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-gray); transition: all 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.5rem; background: var(--red-light); color: var(--primary-red); }
+        .stat-label { font-size: 0.875rem; color: var(--text-gray); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { font-size: 2rem; font-weight: 800; }
+        .success-message, .error-message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-weight: 600; animation: slideDown 0.3s ease-out; }
+        .success-message { background: var(--green-light); color: #065F46; }
+        .error-message { background: var(--red-light); color: var(--red-dark); }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; }
+        .spinner { width: 48px; height: 48px; border: 4px solid var(--border-gray); border-top-color: var(--primary-red); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-gray); }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--bg-white); border-radius: 12px; padding: 2rem; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.5rem; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-gray); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+        .modal-close:hover { background: var(--bg-gray); }
+        .report-summary { background: var(--bg-gray); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .report-row { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 1rem; }
+        .report-row.total { font-size: 1.25rem; font-weight: 700; padding-top: 0.75rem; border-top: 2px solid var(--border-gray); }
+        .report-label { color: var(--text-gray); }
+        .report-value { font-weight: 600; color: var(--text-dark); }
+        .report-value.positive { color: var(--green); }
+        .report-value.negative { color: var(--primary-red); }
+        .reconciliation-table td { text-align: right; }
+        .reconciliation-table td:first-child { text-align: left; }
+        .reconciliation-table td:nth-child(2) { text-align: center; }
+        .balance-row { font-weight: 700; background: #FFF9E6 !important; }
+        .debug-info { background: #FFF3CD; border: 1px solid #FFECB5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem; }
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .content { padding: 1.5rem 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .nav-tabs { padding: 1rem 1rem 0; }
+            .table-actions { flex-direction: column; }
+        }
+        @media print {
+            .header, .nav-tabs, .btn, .debug-info { display: none; }
+            .content { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="app-container"></div>
+    <div id="modalContainer"></div>
+    
+    <script>
+
+        let USER_ROLE = null;
+        let CLIENT_ID = null;
+        
+        // Данные текущего отчета для генерации PDF
+        let currentReport = {
+            clientId: null,
+            clientName: null,
+            dateFrom: null,
+            dateTo: null,
+            sales: [],
+            receipts: []
+        };
+        
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec';
+        const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
+        
+        const T = {
+            ru: {
+                appTitle: 'ERP Система',
+                dashboard: 'Панель',
+                sales: 'Отгрузки',
+                receipts: 'Оплаты',
+                clients: 'Клиенты',
+                products: 'Товары',
+                prices: 'Цены',
+                report: 'Акт сверки',
+                addSale: 'Добавить отгрузку',
+                addReceipt: 'Добавить оплату',
+                addClient: 'Добавить клиента',
+                addProduct: 'Добавить товар',
+                setPrice: 'Установить цену',
+                client: 'Клиент',
+                product: 'Товар',
+                quantity: 'Количество',
+                amount: 'Сумма',
+                price: 'Цена',
+                date: 'Дата',
+                save: 'Сохранить',
+                cancel: 'Отменить',
+                edit: 'Изменить',
+                delete: 'Удалить',
+                name: 'Название',
+                phone: 'Телефон',
+                address: 'Адрес',
+                notes: 'Примечания',
+                unit: 'Единица',
+                category: 'Категория',
+                description: 'Описание',
+                totalSales: 'Общие отгрузки',
+                totalReceipts: 'Общие оплаты',
+                clientsCount: 'Клиентов',
+                productsCount: 'Товаров',
+                actions: 'Действия',
+                loading: 'Загрузка...',
+                success: 'Успешно сохранено!',
+                selectClient: 'Выберите клиента',
+                selectProduct: 'Выберите товар',
+                noData: 'Нет данных',
+                confirmDelete: 'Вы уверены?',
+                enterPrice: 'Введите цену',
+                sum: 'сум',
+                startDate: 'Дата начала',
+                endDate: 'Дата окончания',
+                generate: 'Сформировать',
+                reconciliationAct: 'Акт сверки взаиморасчетов',
+                period: 'Период',
+                type: 'Тип',
+                shipped: 'Передано',
+                received: 'Принято',
+                balance: 'Сальдо',
+                debt: 'Задолженность клиента',
+                overpayment: 'Переплата клиента',
+                print: 'Скачать PDF',
+                downloadPDF: 'Скачать PDF',
+                paymentType: 'Тип оплаты',
+                cash: 'Наличные',
+                card: 'Карта',
+                transfer: 'Перечисление',
+                bankTransfer: 'Безнал',
+                docNumber: 'Номер документа',
+                note: 'Примечание',
+                initialBalance: '***Начальный баланс***',
+                totalShipped: 'Общие отгрузки / Общие оплаты'
+            },
+            uz: {
+                appTitle: 'ERP Tizimi',
+                dashboard: 'Boshqaruv',
+                sales: 'Yetkazish',
+                receipts: "To'lovlar",
+                clients: 'Mijozlar',
+                products: 'Mahsulotlar',
+                prices: 'Narxlar',
+                report: 'Sverka akti',
+                addSale: "Yetkazish qo'shish",
+                addReceipt: "To'lov qo'shish",
+                addClient: "Mijoz qo'shish",
+                addProduct: "Mahsulot qo'shish",
+                setPrice: "Narx o'rnatish",
+                client: 'Mijoz',
+                product: 'Mahsulot',
+                quantity: 'Miqdor',
+                amount: 'Summa',
+                price: 'Narx',
+                date: 'Sana',
+                save: 'Saqlash',
+                cancel: 'Bekor qilish',
+                edit: "O'zgartirish",
+                delete: "O'chirish",
+                name: 'Nomi',
+                phone: 'Telefon',
+                address: 'Manzil',
+                notes: 'Izohlar',
+                unit: "O'lchov",
+                category: 'Kategoriya',
+                description: 'Tavsif',
+                totalSales: 'Jami yetkazish',
+                totalReceipts: "Jami to'lovlar",
+                clientsCount: 'Mijozlar',
+                productsCount: 'Mahsulotlar',
+                actions: 'Harakatlar',
+                loading: 'Yuklanmoqda...',
+                success: 'Saqlandi!',
+                selectClient: 'Mijozni tanlang',
+                selectProduct: 'Mahsulotni tanlang',
+                noData: "Ma'lumot yo'q",
+                confirmDelete: 'Ishonchingiz komilmi?',
+                enterPrice: 'Narxni kiriting',
+                sum: 'sum',
+                startDate: 'Boshlanish',
+                endDate: 'Tugash',
+                generate: 'Yaratish',
+                reconciliationAct: 'Sverka akti',
+                period: 'Davr',
+                type: 'Turi',
+                shipped: 'Yetkazildi',
+                received: 'Qabul qilindi',
+                balance: 'Balans',
+                debt: 'Qarz',
+                overpayment: "Ortiqcha to'lov",
+                print: 'PDF yuklash',
+                downloadPDF: 'PDF yuklash',
+                paymentType: "To'lov turi",
+                cash: 'Naqd',
+                card: 'Karta',
+                transfer: "O'tkazma",
+                bankTransfer: 'Bank',
+                docNumber: 'Hujjat raqami',
+                note: 'Izoh',
+                initialBalance: '***Boshlang\'ich balans***',
+                totalShipped: "Jami yetkazish / Jami to'lovlar"
+            }
+        };
+        
+        let state = {
+            lang: 'ru',
+            activeTab: 'dashboard',
+            loading: true,
+            showSuccess: false,
+            error: null,
+            clients: [],
+            products: [],
+            clientProducts: {},
+            salesData: [],
+            receiptsData: []
+        };
+        
+        function t(key) { return T[state.lang][key] || key; }
+        
+        async function apiCall(action, params = {}) {
+            if (!isConfigured) throw new Error('URL не настроен');
+            const url = new URL(SCRIPT_URL);
+            url.searchParams.append('action', action);
+            Object.keys(params).forEach(key => {
+                if (params[key] !== null && params[key] !== undefined) {
+                    url.searchParams.append(key, params[key]);
+                }
+            });
+            
+            console.log('📡 API Call:', action, params);
+            
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+            const result = await response.json();
+            
+            console.log('📥 API Response:', action, result);
+            
+            return result;
+        }
+        
+        async function loadClients() {
+            const result = await apiCall('getClients');
+            if (result.success) state.clients = result.clients || [];
+        }
+        
+        async function loadProducts() {
+            const result = await apiCall('getProducts');
+            if (result.success) state.products = result.products || [];
+        }
+        
+        async function loadClientProducts(clientId) {
+            const result = await apiCall('getClientProducts', { clientId });
+            if (result.success) state.clientProducts[clientId] = result.products || [];
+        }
+        
+        async function loadSales(clientId = null, startDate = null, endDate = null) {
+            const params = {};
+            if (clientId) params.clientId = clientId;
+            if (startDate) params.startDate = startDate;
+            if (endDate) params.endDate = endDate;
+            
+            if (!startDate && !endDate) {
+                params.startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                params.endDate = new Date().toISOString().split('T')[0];
+            }
+            
+            const result = await apiCall('getSales', params);
+            if (result.success) state.salesData = result.sales || [];
+        }
+        
+        async function loadReceipts(clientId = null, startDate = null, endDate = null) {
+            const params = {};
+            if (clientId) params.clientId = clientId;
+            if (startDate) params.startDate = startDate;
+            if (endDate) params.endDate = endDate;
+            
+            if (!startDate && !endDate) {
+                params.startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                params.endDate = new Date().toISOString().split('T')[0];
+            }
+            
+            const result = await apiCall('getReceipts', params);
+            if (result.success) state.receiptsData = result.receipts || [];
+        }
+        
+        function renderHeader() {
+            return `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo"><div class="logo-icon">E</div><span>${t('appTitle')}</span></div>
+                        <div class="lang-switcher">
+                            <button class="lang-btn ${state.lang === 'ru' ? 'active' : ''}" onclick="setLang('ru')">RU</button>
+                            <button class="lang-btn ${state.lang === 'uz' ? 'active' : ''}" onclick="setLang('uz')">UZ</button>
+                        </div>
+                    </div>
+                </header>
+            `;
+        }
+        
+        function renderNav() {
+
+    // ===== КЛИЕНТ =====
+    if (USER_ROLE === 'client') {
+        return `
+            <nav class="nav-tabs">
+                <button class="nav-tab active">📄 Акт сверки</button>
+            </nav>
+        `;
+    }
+
+    // ===== АДМИН (СТАРЫЙ КОД) =====
+    return `
+        <nav class="nav-tabs">
+            <button class="nav-tab ${state.activeTab === 'dashboard' ? 'active' : ''}" onclick="setTab('dashboard')">Панель</button>
+            <button class="nav-tab ${state.activeTab === 'report' ? 'active' : ''}" onclick="setTab('report')">Акт сверки</button>
+            <button class="nav-tab ${state.activeTab === 'sales' ? 'active' : ''}" onclick="setTab('sales')">Продажи</button>
+            <button class="nav-tab ${state.activeTab === 'receipts' ? 'active' : ''}" onclick="setTab('receipts')">Поступления</button>
+            <button class="nav-tab ${state.activeTab === 'clients' ? 'active' : ''}" onclick="setTab('clients')">Клиенты</button>
+            <button class="nav-tab ${state.activeTab === 'products' ? 'active' : ''}" onclick="setTab('products')">Товары</button>
+            <button class="nav-tab ${state.activeTab === 'prices' ? 'active' : ''}" onclick="setTab('prices')">Цены</button>
+        </nav>
+    `;
+}
+
+        
+        function renderDashboard() {
+            const totalSales = state.salesData.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+            const totalReceipts = state.receiptsData.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+            
+            return `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-label">${t('totalSales')}</div>
+                        <div class="stat-value">${totalSales.toLocaleString('ru-RU')} ${t('sum')}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📥</div>
+                        <div class="stat-label">${t('totalReceipts')}</div>
+                        <div class="stat-value">${totalReceipts.toLocaleString('ru-RU')} ${t('sum')}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-label">${t('clientsCount')}</div>
+                        <div class="stat-value">${state.clients.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-label">${t('productsCount')}</div>
+                        <div class="stat-value">${state.products.length}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function renderReport() {
+            // Если это клиент, автоматически загружаем его данные
+            if (USER_ROLE === 'client' && CLIENT_ID) {
+                const client = state.clients.find(c => c.id == CLIENT_ID);
+                if (client) {
+                    const endDate = new Date();
+                    const startDate = new Date();
+                    startDate.setMonth(startDate.getMonth() - 3); // Последние 3 месяца
+                    
+                    const dateFrom = startDate.toISOString().split('T')[0];
+                    const dateTo = endDate.toISOString().split('T')[0];
+                    
+                    try {
+                        const [salesResult, receiptsResult] = await Promise.all([
+                            apiCall('getSales', { clientId: CLIENT_ID, startDate: dateFrom, endDate: dateTo }),
+                            apiCall('getReceipts', { clientId: CLIENT_ID, startDate: dateFrom, endDate: dateTo })
+                        ]);
+                        
+                        const sales = salesResult.success ? salesResult.sales || [] : [];
+                        const receipts = receiptsResult.success ? receiptsResult.receipts || [] : [];
+                        
+                        // Сохраняем данные отчета для PDF
+                        currentReport = {
+                            clientId: CLIENT_ID,
+                            clientName: client.name,
+                            dateFrom: dateFrom,
+                            dateTo: dateTo,
+                            sales: sales,
+                            receipts: receipts
+                        };
+                        
+                        return `
+                            <div class="card">
+                                <h3 class="card-title">${t('reconciliationAct')}</h3>
+                                ${renderReportResult(client.name, dateFrom, dateTo, sales, receipts)}
+                            </div>
+                        `;
+                    } catch (error) {
+                        return `
+                            <div class="card">
+                                <h3 class="card-title">${t('reconciliationAct')}</h3>
+                                <div class="error-message">Ошибка загрузки данных: ${error.message}</div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            
+            // Для админа - обычная форма
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t('reconciliationAct')}</h3>
+                    <form onsubmit="generateReport(event)">
+                        <div class="form-group">
+                            <label class="form-label">${t('client')}</label>
+                            <select class="form-select" name="client" required>
+                                <option value="">${t('selectClient')}</option>
+                                ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('startDate')}</label>
+                                <input type="date" class="form-input" name="startDate" value="${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('endDate')}</label>
+                                <input type="date" class="form-input" name="endDate" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">📊 ${t('generate')}</button>
+                        </div>
+                    </form>
+                    
+                    <div id="reportResult"></div>
+                </div>
+            `;
+        }
+        
+        function renderReportResult(clientName, startDate, endDate, sales, receipts) {
+            console.log('🔍 Rendering report:', { clientName, startDate, endDate, salesCount: sales.length, receiptsCount: receipts.length });
+            console.log('📊 Sales data:', sales);
+            console.log('💰 Receipts data:', receipts);
+            
+            const totalSales = sales.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+            const totalReceipts = receipts.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+            const balance = totalSales - totalReceipts;
+            
+            console.log('💵 Totals:', { totalSales, totalReceipts, balance });
+            
+            // Объединяем и сортируем все операции по дате
+            const allOperations = [
+                ...sales.map(s => ({
+                    date: new Date(s.date),
+                    type: s.docNumber || `Отгрузка #${s.id}`,
+                    details: `${s.product} (${s.quantity} ${s.price ? '× ' + parseFloat(s.price).toLocaleString('ru-RU', {minimumFractionDigits: 2}) : ''})`,
+                    shipped: s.amount,
+                    received: 0,
+                    isBalance: false
+                })),
+                ...receipts.map(r => ({
+                    date: new Date(r.date),
+                    type: r.docNumber || `Оплата #${r.id}`,
+                    details: r.paymentType || '',
+                    shipped: 0,
+                    received: r.amount,
+                    isBalance: false
+                }))
+            ].sort((a, b) => a.date - b.date);
+            
+            // Добавляем начальный баланс в начало
+            allOperations.unshift({
+                date: new Date(startDate),
+                type: t('initialBalance'),
+                details: '',
+                shipped: 0,
+                received: 0,
+                isBalance: true
+            });
+            
+            console.log('📋 All operations:', allOperations);
+            
+            return `
+                <div style="margin-top: 2rem;">
+                    <div class="debug-info">
+                        <strong>🔍 Отладочная информация:</strong><br>
+                        Найдено отгрузок: ${sales.length}<br>
+                        Найдено оплат: ${receipts.length}<br>
+                        Сумма отгрузок: ${totalSales.toLocaleString('ru-RU', {minimumFractionDigits: 2})} сум<br>
+                        Сумма оплат: ${totalReceipts.toLocaleString('ru-RU', {minimumFractionDigits: 2})} сум<br>
+                        Сальдо: ${balance.toLocaleString('ru-RU', {minimumFractionDigits: 2})} сум
+                    </div>
+                    
+                    <div class="report-summary">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.125rem;">${t('reconciliationAct')}</h4>
+                        <div class="report-row">
+                            <span class="report-label">${t('client')}:</span>
+                            <span class="report-value">${clientName}</span>
+                        </div>
+                        <div class="report-row">
+                            <span class="report-label">${t('period')}:</span>
+                            <span class="report-value">${new Date(startDate).toLocaleDateString('ru-RU')} - ${new Date(endDate).toLocaleDateString('ru-RU')}</span>
+                        </div>
+                        <div class="report-row total">
+                            <span class="report-label">${t('balance')}:</span>
+                            <span class="report-value ${balance > 0 ? 'negative' : balance < 0 ? 'positive' : ''}">
+                                ${Math.abs(balance).toLocaleString('ru-RU', {minimumFractionDigits: 2})} ${t('sum')} 
+                                ${balance > 0 ? '(' + t('debt') + ')' : balance < 0 ? '(' + t('overpayment') + ')' : ''}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 1.5rem 0 1rem; font-size: 1.125rem;">${t('reconciliationAct')}</h4>
+                    <div class="table-container">
+                        <table class="table reconciliation-table">
+                            <thead>
+                                <tr>
+                                    <th>${t('type')}</th>
+                                    <th>${t('date')}</th>
+                                    <th>${t('shipped')}</th>
+                                    <th>${t('received')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${allOperations.map(op => `
+                                    <tr class="${op.isBalance ? 'balance-row' : ''}">
+                                        <td>
+                                            ${op.type}
+                                            ${op.details ? `<br><small style="color: var(--text-gray);">${op.details}</small>` : ''}
+                                        </td>
+                                        <td style="text-align: center;">${op.date.toLocaleDateString('ru-RU')}</td>
+                                        <td>${op.shipped > 0 ? parseFloat(op.shipped).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
+                                        <td>${op.received > 0 ? parseFloat(op.received).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''}</td>
+                                    </tr>
+                                `).join('')}
+                                <tr style="font-weight: 700; background: var(--bg-gray);">
+                                    <td colspan="2">${t('totalShipped')}</td>
+                                    <td>${totalSales.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td>${totalReceipts.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                </tr>
+                                <tr class="balance-row">
+                                    <td colspan="2">${t('balance')}</td>
+                                    <td colspan="2">${Math.abs(balance).toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${balance > 0 ? t('debt') : balance < 0 ? t('overpayment') : ''}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="btn-group" style="margin-top: 1.5rem;">
+                        <button class="btn btn-secondary" onclick="generatePDF()">📄 ${t('downloadPDF')}</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function generateReport(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const startDate = formData.get('startDate');
+            const endDate = formData.get('endDate');
+            
+            console.log('📊 Generating report for:', { clientId, startDate, endDate });
+            
+            const client = state.clients.find(c => c.id == clientId);
+            
+            if (!client) {
+                console.error('❌ Client not found:', clientId);
+                return;
+            }
+            
+            try {
+                const [salesResult, receiptsResult] = await Promise.all([
+                    apiCall('getSales', { clientId, startDate, endDate }),
+                    apiCall('getReceipts', { clientId, startDate, endDate })
+                ]);
+                
+                console.log('📥 Sales result:', salesResult);
+                console.log('📥 Receipts result:', receiptsResult);
+                
+                const sales = salesResult.success ? salesResult.sales || [] : [];
+                const receipts = receiptsResult.success ? receiptsResult.receipts || [] : [];
+                
+                console.log('✅ Parsed data:', { sales, receipts });
+                
+                // Сохраняем данные отчета для PDF
+                currentReport = {
+                    clientId: clientId,
+                    clientName: client.name,
+                    dateFrom: startDate,
+                    dateTo: endDate,
+                    sales: sales,
+                    receipts: receipts
+                };
+                
+                document.getElementById('reportResult').innerHTML = renderReportResult(
+                    client.name, startDate, endDate, sales, receipts
+                );
+            } catch (error) {
+                console.error('❌ Report generation error:', error);
+                state.error = error.message;
+                render();
+            }
+        }
+        
+        function renderSalesForm() {
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t('addSale')}</h3>
+                    ${state.showSuccess ? `<div class="success-message">✓ ${t('success')}</div>` : ''}
+                    ${state.error ? `<div class="error-message">✗ ${state.error}</div>` : ''}
+                    <form onsubmit="handleSaleSubmit(event)">
+                        <div class="form-group">
+                            <label class="form-label">${t('client')}</label>
+                            <select class="form-select" name="client" onchange="handleClientChange(this.value)" required>
+                                <option value="">${t('selectClient')}</option>
+                                ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t('product')}</label>
+                            <select class="form-select" name="product" id="productSelect" onchange="handleProductChange(this.value)" required disabled>
+                                <option value="">${t('selectProduct')}</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('docNumber')}</label>
+                                <input type="text" class="form-input" name="docNumber" placeholder="Отгрузка #...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('date')}</label>
+                                <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('quantity')}</label>
+                                <input type="number" class="form-input" name="quantity" id="quantityInput" onchange="calculateAmount()" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('price')} (${t('sum')})</label>
+                                <input type="number" class="form-input" name="price" id="priceInput" readonly required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('amount')} (${t('sum')})</label>
+                                <input type="number" class="form-input" name="amount" id="amountInput" readonly required>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t('cancel')}</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+        
+        function renderReceiptsForm() {
+            return `
+                <div class="card">
+                    <h3 class="card-title">${t('addReceipt')}</h3>
+                    ${state.showSuccess ? `<div class="success-message">✓ ${t('success')}</div>` : ''}
+                    <form onsubmit="handleReceiptSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('client')}</label>
+                                <select class="form-select" name="client" required>
+                                    <option value="">${t('selectClient')}</option>
+                                    ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('paymentType')}</label>
+                                <select class="form-select" name="paymentType" required>
+                                    <option value="Наличные">${t('cash')}</option>
+                                    <option value="Карта">${t('card')}</option>
+                                    <option value="Перечисление">${t('transfer')}</option>
+                                    <option value="Безнал">${t('bankTransfer')}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">${t('docNumber')}</label>
+                                <input type="text" class="form-input" name="docNumber" placeholder="Оплата клиента #...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('date')}</label>
+                                <input type="date" class="form-input" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t('amount')} (${t('sum')})</label>
+                            <input type="number" class="form-input" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">${t('note')}</label>
+                            <input type="text" class="form-input" name="note" placeholder="${t('note')}">
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                            <button type="button" class="btn btn-secondary" onclick="setTab('dashboard')">✕ ${t('cancel')}</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+        
+        function renderClients() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${t('clients')}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showClientModal()">+ ${t('addClient')}</button>
+                    </div>
+                    ${state.clients.length > 0 ? `
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>${t('name')}</th>
+                                        <th>${t('phone')}</th>
+                                        <th>${t('address')}</th>
+                                        <th>${t('actions')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${state.clients.map(c => `
+                                        <tr>
+                                            <td>${c.id}</td>
+                                            <td>${c.name}</td>
+                                            <td>${c.phone || '-'}</td>
+                                            <td>${c.address || '-'}</td>
+                                            <td class="table-actions">
+                                                <button class="btn btn-secondary btn-sm" onclick="editClient(${c.id})">${t('edit')}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="deleteClient(${c.id})">${t('delete')}</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `<div class="empty-state"><div class="empty-icon">👥</div><p>${t('noData')}</p></div>`}
+                </div>
+            `;
+        }
+        
+        function renderProducts() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${t('products')}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showProductModal()">+ ${t('addProduct')}</button>
+                    </div>
+                    ${state.products.length > 0 ? `
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>${t('name')}</th>
+                                        <th>${t('unit')}</th>
+                                        <th>${t('category')}</th>
+                                        <th>${t('actions')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${state.products.map(p => `
+                                        <tr>
+                                            <td>${p.id}</td>
+                                            <td>${p.name}</td>
+                                            <td>${p.unit}</td>
+                                            <td>${p.category || '-'}</td>
+                                            <td class="table-actions">
+                                                <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">${t('edit')}</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="deleteProduct(${p.id})">${t('delete')}</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `<div class="empty-state"><div class="empty-icon">📦</div><p>${t('noData')}</p></div>`}
+                </div>
+            `;
+        }
+        
+        function renderPrices() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${t('prices')}</h3>
+                        <button class="btn btn-success btn-sm" onclick="showPriceModal()">+ ${t('setPrice')}</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">${t('selectClient')}</label>
+                        <select class="form-select" onchange="loadAndShowClientPrices(this.value)">
+                            <option value="">${t('selectClient')}</option>
+                            ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="pricesTable"></div>
+                </div>
+            `;
+        }
+        
+        function showClientModal(clientId = null) {
+            const client = clientId ? state.clients.find(c => c.id == clientId) : null;
+            const modal = `
+                <div class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${client ? t('edit') : t('addClient')}</h3>
+                            <button class="modal-close" onclick="closeModal()">×</button>
+                        </div>
+                        <form onsubmit="saveClient(event, ${clientId})">
+                            <div class="form-group">
+                                <label class="form-label">${t('name')}</label>
+                                <input type="text" class="form-input" name="name" value="${client ? client.name : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('phone')}</label>
+                                <input type="text" class="form-input" name="phone" value="${client ? client.phone : ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('address')}</label>
+                                <input type="text" class="form-input" name="address" value="${client ? client.address : ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('notes')}</label>
+                                <input type="text" class="form-input" name="notes" value="${client ? client.notes : ''}">
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContainer').innerHTML = modal;
+        }
+        
+        function showProductModal(productId = null) {
+            const product = productId ? state.products.find(p => p.id == productId) : null;
+            const modal = `
+                <div class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${product ? t('edit') : t('addProduct')}</h3>
+                            <button class="modal-close" onclick="closeModal()">×</button>
+                        </div>
+                        <form onsubmit="saveProduct(event, ${productId})">
+                            <div class="form-group">
+                                <label class="form-label">${t('name')}</label>
+                                <input type="text" class="form-input" name="name" value="${product ? product.name : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('unit')}</label>
+                                <input type="text" class="form-input" name="unit" value="${product ? product.unit : 'шт'}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('category')}</label>
+                                <input type="text" class="form-input" name="category" value="${product ? product.category : ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('description')}</label>
+                                <input type="text" class="form-input" name="description" value="${product ? product.description : ''}">
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContainer').innerHTML = modal;
+        }
+        
+        function showPriceModal() {
+            const modal = `
+                <div class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${t('setPrice')}</h3>
+                            <button class="modal-close" onclick="closeModal()">×</button>
+                        </div>
+                        <form onsubmit="savePrice(event)">
+                            <div class="form-group">
+                                <label class="form-label">${t('client')}</label>
+                                <select class="form-select" name="client" required>
+                                    <option value="">${t('selectClient')}</option>
+                                    ${state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('product')}</label>
+                                <select class="form-select" name="product" required>
+                                    <option value="">${t('selectProduct')}</option>
+                                    ${state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">${t('price')} (${t('sum')})</label>
+                                <input type="number" class="form-input" name="price" placeholder="${t('enterPrice')}" required>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">✓ ${t('save')}</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">✕ ${t('cancel')}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalContainer').innerHTML = modal;
+        }
+        
+        function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
+        
+        async function saveClient(event, clientId) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            try {
+                const result = clientId 
+                    ? await apiCall('updateClient', { id: clientId, name: formData.get('name'), phone: formData.get('phone'), address: formData.get('address'), notes: formData.get('notes') })
+                    : await apiCall('addClient', { name: formData.get('name'), chatId: '', phone: formData.get('phone'), address: formData.get('address'), notes: formData.get('notes') });
+                if (result.success) { closeModal(); await loadClients(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
+        }
+        
+        async function saveProduct(event, productId) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            try {
+                const result = productId 
+                    ? await apiCall('updateProduct', { id: productId, name: formData.get('name'), unit: formData.get('unit'), category: formData.get('category'), description: formData.get('description') })
+                    : await apiCall('addProduct', { name: formData.get('name'), unit: formData.get('unit'), category: formData.get('category'), description: formData.get('description') });
+                if (result.success) { closeModal(); await loadProducts(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
+        }
+        
+        async function savePrice(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const productId = formData.get('product');
+            const client = state.clients.find(c => c.id == clientId);
+            const product = state.products.find(p => p.id == productId);
+            try {
+                const result = await apiCall('setClientPrice', { clientId, clientName: client.name, productId, productName: product.name, price: formData.get('price') });
+                if (result.success) { closeModal(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
+        }
+        
+        async function editClient(id) { showClientModal(id); }
+        async function deleteClient(id) { if (!confirm(t('confirmDelete'))) return; try { const result = await apiCall('deleteClient', { id }); if (result.success) { await loadClients(); render(); } } catch (error) { state.error = error.message; render(); } }
+        async function editProduct(id) { showProductModal(id); }
+        async function deleteProduct(id) { if (!confirm(t('confirmDelete'))) return; try { const result = await apiCall('deleteProduct', { id }); if (result.success) { await loadProducts(); render(); } } catch (error) { state.error = error.message; render(); } }
+        
+        async function handleClientChange(clientId) {
+            if (!clientId) { document.getElementById('productSelect').disabled = true; document.getElementById('productSelect').innerHTML = `<option value="">${t('selectProduct')}</option>`; return; }
+            await loadClientProducts(clientId);
+            const products = state.clientProducts[clientId] || [];
+            const select = document.getElementById('productSelect');
+            select.disabled = false;
+            select.innerHTML = `<option value="">${t('selectProduct')}</option>` + products.map(p => `<option value="${p.productId}" data-price="${p.price}">${p.productName} - ${parseFloat(p.price).toLocaleString('ru-RU')} ${t('sum')}</option>`).join('');
+        }
+        
+        function handleProductChange(productId) {
+            const select = document.getElementById('productSelect');
+            const option = select.options[select.selectedIndex];
+            const price = option.getAttribute('data-price');
+            document.getElementById('priceInput').value = price;
+            calculateAmount();
+        }
+        
+        function calculateAmount() {
+            const quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
+            const price = parseFloat(document.getElementById('priceInput').value) || 0;
+            document.getElementById('amountInput').value = quantity * price;
+        }
+        
+        async function handleSaleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const productId = formData.get('product');
+            const client = state.clients.find(c => c.id == clientId);
+            const product = state.products.find(p => p.id == productId);
+            try {
+                const result = await apiCall('addSale', { 
+                    clientId, 
+                    clientName: client.name, 
+                    productId, 
+                    productName: product.name, 
+                    quantity: formData.get('quantity'), 
+                    price: formData.get('price'), 
+                    date: formData.get('date'),
+                    docNumber: formData.get('docNumber') || null
+                });
+                if (result.success) { 
+                    event.target.reset(); 
+                    document.getElementById('productSelect').disabled = true;
+                    document.getElementById('productSelect').innerHTML = `<option value="">${t('selectProduct')}</option>`;
+                    document.getElementById('priceInput').value = '';
+                    document.getElementById('amountInput').value = '';
+                    await loadSales(); 
+                    state.showSuccess = true; 
+                    render(); 
+                    setTimeout(() => { state.showSuccess = false; render(); }, 3000); 
+                }
+            } catch (error) { state.error = error.message; render(); }
+        }
+        
+        async function handleReceiptSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const clientId = formData.get('client');
+            const client = state.clients.find(c => c.id == clientId);
+            try {
+                const result = await apiCall('addReceipt', { 
+                    clientId, 
+                    clientName: client.name, 
+                    paymentType: formData.get('paymentType'),
+                    amount: formData.get('amount'), 
+                    date: formData.get('date'),
+                    docNumber: formData.get('docNumber') || null,
+                    note: formData.get('note') || ''
+                });
+                if (result.success) { event.target.reset(); await loadReceipts(); state.showSuccess = true; render(); setTimeout(() => { state.showSuccess = false; render(); }, 3000); }
+            } catch (error) { state.error = error.message; render(); }
+        }
+        
+        async function loadAndShowClientPrices(clientId) {
+            if (!clientId) { document.getElementById('pricesTable').innerHTML = ''; return; }
+            await loadClientProducts(clientId);
+            const products = state.clientProducts[clientId] || [];
+            document.getElementById('pricesTable').innerHTML = products.length > 0 ? `
+                <div class="table-container">
+                    <table class="table">
+                        <thead><tr><th>${t('product')}</th><th>${t('price')}</th><th>${t('actions')}</th></tr></thead>
+                        <tbody>
+                            ${products.map(p => `<tr><td>${p.productName}</td><td>${parseFloat(p.price).toLocaleString('ru-RU')} ${t('sum')}</td><td><button class="btn btn-secondary btn-sm" onclick="deletePrice(${clientId}, ${p.productId})">${t('delete')}</button></td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            ` : `<div class="empty-state"><div class="empty-icon">💰</div><p>${t('noData')}</p></div>`;
+        }
+        
+        async function deletePrice(clientId, productId) {
+            if (!confirm(t('confirmDelete'))) return;
+            try { const result = await apiCall('deleteClientPrice', { clientId, productId }); if (result.success) await loadAndShowClientPrices(clientId); } catch (error) { state.error = error.message; render(); }
+        }
+        
+        async function render() {
+            const app = document.getElementById('app');
+            if (!isConfigured) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>⚠️ URL не настроен!</p></div>`; return; }
+            if (state.loading) { app.innerHTML = `<div class="loading"><div class="spinner"></div><p>${t('loading')}</p></div>`; return; }
+            let content = '';
+            switch(state.activeTab) {
+                case 'dashboard': content = renderDashboard(); break;
+                case 'report': content = await renderReport(); break;
+                case 'sales': content = renderSalesForm(); break;
+                case 'receipts': content = renderReceiptsForm(); break;
+                case 'clients': content = renderClients(); break;
+                case 'products': content = renderProducts(); break;
+                case 'prices': content = renderPrices(); break;
+            }
+            app.innerHTML = `${renderHeader()}${renderNav()}<main class="content">${content}</main>`;
+        }
+        
+        window.setLang = function(lang) { state.lang = lang; render(); }
+        window.setTab = function(tab) { state.activeTab = tab; state.error = null; render(); }
+        window.showClientModal = showClientModal;
+        window.showProductModal = showProductModal;
+        window.showPriceModal = showPriceModal;
+        window.closeModal = closeModal;
+        window.saveClient = saveClient;
+        window.saveProduct = saveProduct;
+        window.savePrice = savePrice;
+        window.editClient = editClient;
+        window.deleteClient = deleteClient;
+        window.editProduct = editProduct;
+        window.deleteProduct = deleteProduct;
+        window.handleClientChange = handleClientChange;
+        window.handleProductChange = handleProductChange;
+        window.calculateAmount = calculateAmount;
+        window.handleSaleSubmit = handleSaleSubmit;
+        window.handleReceiptSubmit = handleReceiptSubmit;
+        window.loadAndShowClientPrices = loadAndShowClientPrices;
+        window.deletePrice = deletePrice;
+        window.generateReport = generateReport;
+        
+        async function init() {
+    state.loading = true;
+    render();
+
+    // === 🔐 АВТОРИЗАЦИЯ ===
+    const tg = window.Telegram?.WebApp;
+    const chatId = tg?.initDataUnsafe?.user?.id;
+
+    if (!chatId) {
+        showNoAccess('Откройте приложение из Telegram');
+        return;
+    }
+
+    const auth = await apiCall('detectUser', { chatId });
+
+    if (!auth.success) {
+        showNoAccess('Ошибка авторизации');
+        return;
+    }
+
+    const user = auth.user;
+
+    if (user.role === 'admin') {
+        USER_ROLE = 'admin';
+        // админ — всё как раньше
+    }
+    else if (user.role === 'client') {
+        USER_ROLE = 'client';
+        CLIENT_ID = user.clientId;
+        state.activeTab = 'report'; // сразу акт сверки
+    }
+    else {
+        showNoAccess('У вас нет доступа. Свяжитесь с администратором.');
+        return;
+    }
+
+    // === TELEGRAM READY ===
+    if (tg) {
+        tg.ready();
+        tg.expand();
+        // Отключаем закрытие при свайпе вниз (если метод доступен)
+        if (typeof tg.disableVerticalSwipes === 'function') {
+            tg.disableVerticalSwipes();
+        }
+    }
+
+    // === ЗАГРУЗКА ДАННЫХ ===
+    await Promise.all([
+        loadClients(),
+        loadProducts(),
+        loadSales(),
+        loadReceipts()
+    ]);
+
+    state.loading = false;
+    render();
+}
+
+        init();
+
+
+        function showNoAccess(text) {
+    document.getElementById('app').innerHTML = `
+      <div class="card" style="max-width:480px;margin:80px auto;text-align:center">
+        <h3>⛔ Доступ запрещён</h3>
+        <p>${text}</p>
+      </div>
+    `;
+  }
+
+        // Функция генерации и отправки PDF в Telegram
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const tg = window.Telegram?.WebApp;
+            const chatId = tg?.initDataUnsafe?.user?.id;
+            
+            if (!chatId) {
+                alert('Ошибка: не удалось получить ваш Chat ID');
+                return;
+            }
+            
+            // Проверяем наличие данных отчета
+            if (!currentReport.clientId || !currentReport.clientName) {
+                alert(t('selectClient'));
+                return;
+            }
+            
+            try {
+                // Показываем уведомление
+                if (tg) tg.showAlert('Создаем PDF...');
+                
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Используем данные из currentReport
+                const clientName = currentReport.clientName;
+                const dateFrom = currentReport.dateFrom;
+                const dateTo = currentReport.dateTo;
+                const clientSales = currentReport.sales;
+                const clientReceipts = currentReport.receipts;
+
+                // Вычисляем итоги
+                const totalSales = clientSales.reduce((sum, s) => sum + parseFloat(s.amount), 0);
+                const totalReceipts = clientReceipts.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+                const balance = totalSales - totalReceipts;
+
+                // Настройки шрифта
+                pdf.setFont('helvetica');
+                
+                let yPos = 20;
+
+                // Заголовок
+                pdf.setFontSize(18);
+                pdf.setFont('helvetica', 'bold');
+                pdf.text('АКТ СВЕРКИ', 105, yPos, { align: 'center' });
+                yPos += 10;
+
+                // Информация о клиенте и периоде
+                pdf.setFontSize(11);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text(`Клиент: ${clientName}`, 20, yPos);
+                yPos += 7;
+                pdf.text(`Период: ${dateFrom || '...'} - ${dateTo || '...'}`, 20, yPos);
+                yPos += 10;
+
+                // Таблица с данными
+                const tableData = [];
+
+                // Добавляем отгрузки
+                clientSales.forEach(sale => {
+                    const productName = state.products.find(p => p.id === sale.productId)?.name || sale.product || '';
+                    tableData.push({
+                        date: sale.date,
+                        type: 'Отгрузка',
+                        description: `${sale.docNumber || ''} - ${productName} (${sale.quantity})`,
+                        debit: parseFloat(sale.amount).toLocaleString('ru-RU'),
+                        credit: ''
+                    });
+                });
+
+                // Добавляем оплаты
+                clientReceipts.forEach(receipt => {
+                    tableData.push({
+                        date: receipt.date,
+                        type: 'Оплата',
+                        description: `${receipt.docNumber || ''} - ${receipt.paymentType} ${receipt.note ? '(' + receipt.note + ')' : ''}`,
+                        debit: '',
+                        credit: parseFloat(receipt.amount).toLocaleString('ru-RU')
+                    });
+                });
+
+                // Сортируем по дате
+                tableData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Создаем таблицу
+                pdf.autoTable({
+                    startY: yPos,
+                    head: [['Дата', 'Тип', 'Описание', 'Отгрузка', 'Оплата']],
+                    body: tableData.map(row => [
+                        row.date,
+                        row.type,
+                        row.description,
+                        row.debit,
+                        row.credit
+                    ]),
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 9,
+                        cellPadding: 3
+                    },
+                    headStyles: {
+                        fillColor: [220, 38, 38],
+                        textColor: 255,
+                        fontStyle: 'bold',
+                        halign: 'center'
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 25 },
+                        2: { cellWidth: 70 },
+                        3: { cellWidth: 35, halign: 'right' },
+                        4: { cellWidth: 35, halign: 'right' }
+                    },
+                    margin: { left: 10, right: 10 }
+                });
+
+                // Итоги
+                const finalY = pdf.lastAutoTable.finalY + 10;
+                
+                pdf.setFontSize(11);
+                pdf.setFont('helvetica', 'bold');
+                
+                pdf.text(`Общие отгрузки: ${totalSales.toLocaleString('ru-RU')} сум`, 20, finalY);
+                pdf.text(`Общие оплаты: ${totalReceipts.toLocaleString('ru-RU')} сум`, 20, finalY + 7);
+                
+                // Сальдо с цветом
+                if (balance > 0) {
+                    pdf.setTextColor(220, 38, 38); // красный
+                    pdf.text(`Сальдо (задолженность): ${balance.toLocaleString('ru-RU')} сум`, 20, finalY + 14);
+                } else if (balance < 0) {
+                    pdf.setTextColor(5, 150, 105); // зеленый
+                    pdf.text(`Сальдо (переплата): ${Math.abs(balance).toLocaleString('ru-RU')} сум`, 20, finalY + 14);
+                } else {
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Сальдо: 0 сум`, 20, finalY + 14);
+                }
+
+                // Дата создания
+                pdf.setTextColor(100, 100, 100);
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text(`Создано: ${new Date().toLocaleString('ru-RU')}`, 20, finalY + 25);
+
+                // Имя файла
+                const fileName = `Акт_сверки_${clientName.replace(/\s+/g, '_')}_${dateFrom}_${dateTo}.pdf`;
+                
+                // Получаем PDF как base64
+                const pdfBase64 = pdf.output('datauristring').split(',')[1];
+                
+                // Отправляем в Telegram через Google Apps Script
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'sendPDF',
+                        chatId: chatId.toString(),
+                        pdfData: pdfBase64,
+                        fileName: fileName
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (tg) {
+                        tg.showAlert('✅ PDF отправлен в чат!');
+                    } else {
+                        alert('✅ PDF отправлен в чат!');
+                    }
+                } else {
+                    throw new Error(result.error || 'Ошибка отправки');
+                }
+
+            } catch (error) {
+                console.error('Ошибка создания PDF:', error);
+                if (tg) {
+                    tg.showAlert('❌ Ошибка при создании PDF: ' + error.message);
+                } else {
+                    alert('❌ Ошибка при создании PDF: ' + error.message);
+                }
+            }
+        }
+        
+        window.generatePDF = generatePDF;
+        
+    </script>
+</body>
+</html>
