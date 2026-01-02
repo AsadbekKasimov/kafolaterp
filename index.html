@@ -14,7 +14,7 @@
             --border-gray: #E5E7EB; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1); --green: #059669; --green-light: #D1FAE5;
         }
-        body { font-family: 'Onest', -apple-system, sans-serif; background: var(--bg-gray); color: var(--text-dark); line-height: 1.6; }
+        body { font-family: 'Onest', -apple-system, sans-serif; background: var(--bg-gray); color: var(--text-dark); line-height: 1.6; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
         .app-container { max-width: 1400px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
         .header { background: var(--bg-white); border-bottom: 1px solid var(--border-gray); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
         .header-content { display: flex; justify-content: space-between; align-items: center; }
@@ -108,7 +108,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec'';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -1116,6 +1116,8 @@
     if (tg) {
         tg.ready();
         tg.expand();
+        // Отключаем закрытие при свайпе вниз
+        tg.isVerticalSwipesEnabled = false;
     }
 
     // === ЗАГРУЗКА ДАННЫХ ===
