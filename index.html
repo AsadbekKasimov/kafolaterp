@@ -110,7 +110,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyu2qrHeKv-hG2T_kRRWUevORbmVj9Ri8kXRNT1aE73AVFiqeMxBV8s7Ymfjku3A3ctFg/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -543,7 +543,7 @@
                     </div>
                     
                     <div class="btn-group" style="margin-top: 1.5rem;">
-                        <button class="btn btn-secondary" onclick="generatePDF()">📄 ${t('downloadPDF')}</button>
+                       <button class="btn btn-primary" onclick="generatePDF()">📄 Скачать PDF</button>
                     </div>
                 </div>
             `;
@@ -1225,6 +1225,41 @@
         }
         
         window.generatePDF = generatePDF;
+
+async function generatePDF() {
+
+  const client =
+    document.querySelector('.report-row .report-value')?.innerText || '';
+
+  const period =
+    document.querySelectorAll('.report-row .report-value')[1]?.innerText || '';
+
+  const table =
+    document.querySelector('.reconciliation-table')?.outerHTML || '';
+
+  const balance =
+    document.querySelector('.report-row.total .report-value')?.innerText || '';
+
+  const res = await fetch(SCRIPT_URL + '?action=generatePDF', {
+    method: 'POST',
+    body: JSON.stringify({
+      client,
+      period,
+      table,
+      balance
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    window.open(data.url, '_blank');
+  } else {
+    alert('Ошибка создания PDF');
+  }
+}
+
+
         
     </script>
 </body>
