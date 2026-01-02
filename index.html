@@ -108,7 +108,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec'';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCbyemOx7BitMAS12pYPeloDiPJOIOyBOT1riFOVEATNckcXRnqIeGb7A4MbvXDX9msA/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -1116,8 +1116,10 @@
     if (tg) {
         tg.ready();
         tg.expand();
-        // Отключаем закрытие при свайпе вниз
-        tg.isVerticalSwipesEnabled = false;
+        // Отключаем закрытие при свайпе вниз (если метод доступен)
+        if (typeof tg.disableVerticalSwipes === 'function') {
+            tg.disableVerticalSwipes();
+        }
     }
 
     // === ЗАГРУЗКА ДАННЫХ ===
