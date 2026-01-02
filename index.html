@@ -110,7 +110,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPaze1tNsFeos8453wkrjpdwxkxIAMUVpKM3m8f0F6Rq6pmebDasLlloLTl2eSvqDCtA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyY9K1yQQENhRzLfYk7N9c2HlSwLKkoJw-xxayT4a7ETQswNPWn-PQXknYf3putt8hHkQ/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -1150,11 +1150,21 @@
     `;
   }
 
-        // Функция генерации PDF
+        // Функция генерации и отправки PDF в Telegram
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
+            const tg = window.Telegram?.WebApp;
+            const chatId = tg?.initDataUnsafe?.user?.id;
+            
+            if (!chatId) {
+                alert('Ошибка: не удалось получить ваш Chat ID');
+                return;
+            }
             
             try {
+                // Показываем уведомление
+                if (tg) tg.showAlert('Создаем PDF...');
+                
                 const pdf = new jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
@@ -1285,10 +1295,10 @@
                 // Сальдо с цветом
                 if (balance > 0) {
                     pdf.setTextColor(220, 38, 38); // красный
-                    pdf.text(`Сальдо (задолженность клиента): ${balance.toLocaleString('ru-RU')} сум`, 20, finalY + 14);
+                    pdf.text(`Сальдо (задолженность): ${balance.toLocaleString('ru-RU')} сум`, 20, finalY + 14);
                 } else if (balance < 0) {
                     pdf.setTextColor(5, 150, 105); // зеленый
-                    pdf.text(`Сальдо (переплата клиента): ${Math.abs(balance).toLocaleString('ru-RU')} сум`, 20, finalY + 14);
+                    pdf.text(`Сальдо (переплата): ${Math.abs(balance).toLocaleString('ru-RU')} сум`, 20, finalY + 14);
                 } else {
                     pdf.setTextColor(0, 0, 0);
                     pdf.text(`Сальдо: 0 сум`, 20, finalY + 14);
@@ -1303,12 +1313,39 @@
                 // Имя файла
                 const fileName = `Акт_сверки_${clientName.replace(/\s+/g, '_')}_${dateFrom}_${dateTo}.pdf`;
                 
-                // Сохраняем
-                pdf.save(fileName);
+                // Получаем PDF как base64
+                const pdfBase64 = pdf.output('datauristring').split(',')[1];
+                
+                // Отправляем в Telegram через Google Apps Script
+                const response = await fetch(SCRIPT_URL + '?action=sendPDF', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        chatId: chatId,
+                        pdfData: pdfBase64,
+                        fileName: fileName
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (tg) {
+                        tg.showAlert('✅ PDF отправлен в чат!');
+                    } else {
+                        alert('✅ PDF отправлен в чат!');
+                    }
+                } else {
+                    throw new Error(result.error || 'Ошибка отправки');
+                }
 
             } catch (error) {
                 console.error('Ошибка создания PDF:', error);
-                alert('Ошибка при создании PDF. Попробуйте еще раз.');
+                if (tg) {
+                    tg.showAlert('❌ Ошибка при создании PDF: ' + error.message);
+                } else {
+                    alert('❌ Ошибка при создании PDF: ' + error.message);
+                }
             }
         }
         
