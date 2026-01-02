@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP System v2</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -167,7 +169,8 @@
                 balance: 'Сальдо',
                 debt: 'Задолженность клиента',
                 overpayment: 'Переплата клиента',
-                print: 'Печать',
+                print: 'Скачать PDF',
+                downloadPDF: 'Скачать PDF',
                 paymentType: 'Тип оплаты',
                 cash: 'Наличные',
                 card: 'Карта',
@@ -233,7 +236,8 @@
                 balance: 'Balans',
                 debt: 'Qarz',
                 overpayment: "Ortiqcha to'lov",
-                print: 'Chop etish',
+                print: 'PDF yuklash',
+                downloadPDF: 'PDF yuklash',
                 paymentType: "To'lov turi",
                 cash: 'Naqd',
                 card: 'Karta',
@@ -539,7 +543,7 @@
                     </div>
                     
                     <div class="btn-group" style="margin-top: 1.5rem;">
-                        <button class="btn btn-secondary" onclick="window.print()">🖨️ ${t('print')}</button>
+                        <button class="btn btn-secondary" onclick="generatePDF()">📄 ${t('downloadPDF')}</button>
                     </div>
                 </div>
             `;
@@ -1145,6 +1149,82 @@
       </div>
     `;
   }
+
+        // Функция генерации PDF
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Показываем индикатор загрузки
+            const originalContent = document.querySelector('.content').innerHTML;
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading';
+            loadingDiv.innerHTML = '<div class="spinner"></div><p>Создаем PDF...</p>';
+            document.querySelector('.content').appendChild(loadingDiv);
+            
+            try {
+                // Находим контент для PDF
+                const reportCard = document.querySelector('.card');
+                
+                // Создаем временный контейнер для рендера
+                const tempContainer = document.createElement('div');
+                tempContainer.style.position = 'absolute';
+                tempContainer.style.left = '-9999px';
+                tempContainer.style.width = '794px'; // A4 width in pixels at 96 DPI
+                tempContainer.style.background = 'white';
+                tempContainer.style.padding = '40px';
+                tempContainer.innerHTML = reportCard.innerHTML;
+                
+                // Удаляем кнопки из временного контейнера
+                const buttons = tempContainer.querySelectorAll('.btn');
+                buttons.forEach(btn => btn.remove());
+                
+                document.body.appendChild(tempContainer);
+                
+                // Конвертируем в canvas
+                const canvas = await html2canvas(tempContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+                
+                // Удаляем временный контейнер
+                document.body.removeChild(tempContainer);
+                
+                // Создаем PDF
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                
+                // Получаем имя клиента и дату
+                const clientSelect = document.querySelector('select[name="clientId"]');
+                const clientName = clientSelect ? clientSelect.options[clientSelect.selectedIndex]?.text : 'Клиент';
+                const dateFrom = document.querySelector('input[name="dateFrom"]')?.value || '';
+                const dateTo = document.querySelector('input[name="dateTo"]')?.value || '';
+                
+                const fileName = `Акт_сверки_${clientName}_${dateFrom}_${dateTo}.pdf`.replace(/\s+/g, '_');
+                
+                // Скачиваем PDF
+                pdf.save(fileName);
+                
+            } catch (error) {
+                console.error('Ошибка создания PDF:', error);
+                alert('Ошибка при создании PDF. Попробуйте еще раз.');
+            } finally {
+                // Убираем индикатор загрузки
+                loadingDiv.remove();
+            }
+        }
+        
+        window.generatePDF = generatePDF;
         
     </script>
 </body>
