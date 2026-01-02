@@ -6,7 +6,7 @@
     <title>ERP System v2</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -110,7 +110,7 @@
         let USER_ROLE = null;
         let CLIENT_ID = null;
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyu2qrHeKv-hG2T_kRRWUevORbmVj9Ri8kXRNT1aE73AVFiqeMxBV8s7Ymfjku3A3ctFg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPaze1tNsFeos8453wkrjpdwxkxIAMUVpKM3m8f0F6Rq6pmebDasLlloLTl2eSvqDCtA/exec';
         const isConfigured = SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' && SCRIPT_URL.includes('script.google.com');
         
         const T = {
@@ -543,7 +543,7 @@
                     </div>
                     
                     <div class="btn-group" style="margin-top: 1.5rem;">
-                       <button class="btn btn-primary" onclick="generatePDF()">📄 Скачать PDF</button>
+                        <button class="btn btn-secondary" onclick="generatePDF()">📄 ${t('downloadPDF')}</button>
                     </div>
                 </div>
             `;
@@ -1154,112 +1154,165 @@
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
             
-            // Показываем индикатор загрузки
-            const originalContent = document.querySelector('.content').innerHTML;
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading';
-            loadingDiv.innerHTML = '<div class="spinner"></div><p>Создаем PDF...</p>';
-            document.querySelector('.content').appendChild(loadingDiv);
-            
             try {
-                // Находим контент для PDF
-                const reportCard = document.querySelector('.card');
-                
-                // Создаем временный контейнер для рендера
-                const tempContainer = document.createElement('div');
-                tempContainer.style.position = 'absolute';
-                tempContainer.style.left = '-9999px';
-                tempContainer.style.width = '794px'; // A4 width in pixels at 96 DPI
-                tempContainer.style.background = 'white';
-                tempContainer.style.padding = '40px';
-                tempContainer.innerHTML = reportCard.innerHTML;
-                
-                // Удаляем кнопки из временного контейнера
-                const buttons = tempContainer.querySelectorAll('.btn');
-                buttons.forEach(btn => btn.remove());
-                
-                document.body.appendChild(tempContainer);
-                
-                // Конвертируем в canvas
-                const canvas = await html2canvas(tempContainer, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#ffffff'
-                });
-                
-                // Удаляем временный контейнер
-                document.body.removeChild(tempContainer);
-                
-                // Создаем PDF
-                const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
                     format: 'a4'
                 });
-                
-                const imgWidth = 210; // A4 width in mm
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                
-                // Получаем имя клиента и дату
+
+                // Получаем данные из формы
                 const clientSelect = document.querySelector('select[name="clientId"]');
+                const clientId = parseInt(clientSelect?.value);
                 const clientName = clientSelect ? clientSelect.options[clientSelect.selectedIndex]?.text : 'Клиент';
                 const dateFrom = document.querySelector('input[name="dateFrom"]')?.value || '';
                 const dateTo = document.querySelector('input[name="dateTo"]')?.value || '';
+
+                if (!clientId) {
+                    alert(t('selectClient'));
+                    return;
+                }
+
+                // Фильтруем данные по клиенту и датам
+                const clientSales = state.sales.filter(s => {
+                    const saleDate = new Date(s.date);
+                    const fromDate = dateFrom ? new Date(dateFrom) : new Date('1900-01-01');
+                    const toDate = dateTo ? new Date(dateTo) : new Date('2100-12-31');
+                    return s.clientId === clientId && saleDate >= fromDate && saleDate <= toDate;
+                });
+
+                const clientReceipts = state.receipts.filter(r => {
+                    const receiptDate = new Date(r.date);
+                    const fromDate = dateFrom ? new Date(dateFrom) : new Date('1900-01-01');
+                    const toDate = dateTo ? new Date(dateTo) : new Date('2100-12-31');
+                    return r.clientId === clientId && receiptDate >= fromDate && receiptDate <= toDate;
+                });
+
+                // Вычисляем итоги
+                const totalSales = clientSales.reduce((sum, s) => sum + parseFloat(s.amount), 0);
+                const totalReceipts = clientReceipts.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+                const balance = totalSales - totalReceipts;
+
+                // Настройки шрифта
+                pdf.setFont('helvetica');
                 
-                const fileName = `Акт_сверки_${clientName}_${dateFrom}_${dateTo}.pdf`.replace(/\s+/g, '_');
+                let yPos = 20;
+
+                // Заголовок
+                pdf.setFontSize(18);
+                pdf.setFont('helvetica', 'bold');
+                pdf.text('АКТ СВЕРКИ', 105, yPos, { align: 'center' });
+                yPos += 10;
+
+                // Информация о клиенте и периоде
+                pdf.setFontSize(11);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text(`Клиент: ${clientName}`, 20, yPos);
+                yPos += 7;
+                pdf.text(`Период: ${dateFrom || '...'} - ${dateTo || '...'}`, 20, yPos);
+                yPos += 10;
+
+                // Таблица с данными
+                const tableData = [];
+
+                // Добавляем отгрузки
+                clientSales.forEach(sale => {
+                    const productName = state.products.find(p => p.id === sale.productId)?.name || '';
+                    tableData.push({
+                        date: sale.date,
+                        type: 'Отгрузка',
+                        description: `${sale.docNumber || ''} - ${productName} (${sale.quantity})`,
+                        debit: parseFloat(sale.amount).toLocaleString('ru-RU'),
+                        credit: ''
+                    });
+                });
+
+                // Добавляем оплаты
+                clientReceipts.forEach(receipt => {
+                    tableData.push({
+                        date: receipt.date,
+                        type: 'Оплата',
+                        description: `${receipt.docNumber || ''} - ${receipt.paymentType} ${receipt.note ? '(' + receipt.note + ')' : ''}`,
+                        debit: '',
+                        credit: parseFloat(receipt.amount).toLocaleString('ru-RU')
+                    });
+                });
+
+                // Сортируем по дате
+                tableData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Создаем таблицу
+                pdf.autoTable({
+                    startY: yPos,
+                    head: [['Дата', 'Тип', 'Описание', 'Отгрузка', 'Оплата']],
+                    body: tableData.map(row => [
+                        row.date,
+                        row.type,
+                        row.description,
+                        row.debit,
+                        row.credit
+                    ]),
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 9,
+                        cellPadding: 3
+                    },
+                    headStyles: {
+                        fillColor: [220, 38, 38],
+                        textColor: 255,
+                        fontStyle: 'bold',
+                        halign: 'center'
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 25 },
+                        2: { cellWidth: 70 },
+                        3: { cellWidth: 35, halign: 'right' },
+                        4: { cellWidth: 35, halign: 'right' }
+                    },
+                    margin: { left: 10, right: 10 }
+                });
+
+                // Итоги
+                const finalY = pdf.lastAutoTable.finalY + 10;
                 
-                // Скачиваем PDF
+                pdf.setFontSize(11);
+                pdf.setFont('helvetica', 'bold');
+                
+                pdf.text(`Общие отгрузки: ${totalSales.toLocaleString('ru-RU')} сум`, 20, finalY);
+                pdf.text(`Общие оплаты: ${totalReceipts.toLocaleString('ru-RU')} сум`, 20, finalY + 7);
+                
+                // Сальдо с цветом
+                if (balance > 0) {
+                    pdf.setTextColor(220, 38, 38); // красный
+                    pdf.text(`Сальдо (задолженность клиента): ${balance.toLocaleString('ru-RU')} сум`, 20, finalY + 14);
+                } else if (balance < 0) {
+                    pdf.setTextColor(5, 150, 105); // зеленый
+                    pdf.text(`Сальдо (переплата клиента): ${Math.abs(balance).toLocaleString('ru-RU')} сум`, 20, finalY + 14);
+                } else {
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Сальдо: 0 сум`, 20, finalY + 14);
+                }
+
+                // Дата создания
+                pdf.setTextColor(100, 100, 100);
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text(`Создано: ${new Date().toLocaleString('ru-RU')}`, 20, finalY + 25);
+
+                // Имя файла
+                const fileName = `Акт_сверки_${clientName.replace(/\s+/g, '_')}_${dateFrom}_${dateTo}.pdf`;
+                
+                // Сохраняем
                 pdf.save(fileName);
-                
+
             } catch (error) {
                 console.error('Ошибка создания PDF:', error);
                 alert('Ошибка при создании PDF. Попробуйте еще раз.');
-            } finally {
-                // Убираем индикатор загрузки
-                loadingDiv.remove();
             }
         }
         
         window.generatePDF = generatePDF;
-
-async function generatePDF() {
-
-  const client =
-    document.querySelector('.report-row .report-value')?.innerText || '';
-
-  const period =
-    document.querySelectorAll('.report-row .report-value')[1]?.innerText || '';
-
-  const table =
-    document.querySelector('.reconciliation-table')?.outerHTML || '';
-
-  const balance =
-    document.querySelector('.report-row.total .report-value')?.innerText || '';
-
-  const res = await fetch(SCRIPT_URL + '?action=generatePDF', {
-    method: 'POST',
-    body: JSON.stringify({
-      client,
-      period,
-      table,
-      balance
-    })
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
-    window.open(data.url, '_blank');
-  } else {
-    alert('Ошибка создания PDF');
-  }
-}
-
-
         
     </script>
 </body>
